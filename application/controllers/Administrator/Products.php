@@ -188,16 +188,17 @@ class Products extends CI_Controller {
                 concat(p.Product_Name, ' - ', p.Product_Code) as display_text,
                 pc.ProductCategory_Name,
                 br.brand_name,
-                u.Unit_Name
+                u.Unit_Name,
+                g.name as genetic_name
             from tbl_product p
             left join tbl_productcategory pc on pc.ProductCategory_SlNo = p.ProductCategory_ID
             left join tbl_brand br on br.brand_SiNo = p.brand
             left join tbl_unit u on u.Unit_SlNo = p.Unit_ID
+            left join tbl_genetic g on g.id = p.genetic_id
             where p.status = 'a'
             $clauses
-            and Product_branchid = ?
             order by p.Product_Name asc
-        ",$this->brunch)->result();
+        ")->result();
 
         echo json_encode($products);
     }

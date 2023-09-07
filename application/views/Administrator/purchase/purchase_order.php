@@ -47,59 +47,28 @@
 			font-size: 17px;
 		}
 	}
+	@media screen and (max-width: 600px) and (min-width: 320px) {
+		.paddingMobile {
+			padding-left: 12px !important;
+			padding-right: 12px !important;
+		}
+
+	}
 </style>
 
 <div class="row" id="purchase">
-	<div class="col-xs-12 col-md-12 col-lg-12" style="border-bottom:1px #ccc solid;margin-bottom:5px;">
-		<div class="row">
-			<div class="form-group">
-				<label class="col-sm-1 control-label no-padding-right"> Invoice no </label>
-				<div class="col-sm-2">
-					<input type="text" id="invoice" name="invoice" v-model="purchase.invoice" readonly style="height:26px;" />
-				</div>
-			</div>
-
-			<div class="form-group">
-				<label class="col-sm-2 control-label no-padding-right"> Purchase For </label>
-				<div class="col-sm-3">
-					<v-select id="branchDropdown" v-bind:options="branches" v-model="selectedBranch" label="Brunch_name" disabled></v-select>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<label class="col-sm-1 control-label no-padding-right"> Date </label>
-				<div class="col-sm-3">
-					<input class="form-control" id="purchaseDate" name="purchaseDate" type="date" v-model="purchase.purchaseDate" v-bind:disabled="userType == 'u' ? true : false" style="border-radius: 5px 0px 0px 5px !important;padding: 4px 6px 4px !important;width: 230px;" />
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-xs-12 col-md-9 col-lg-9">
-		<div class="widget-box">
-			<div class="widget-header">
-				<h4 class="widget-title">Supplier & Product Information</h4>
-				<div class="widget-toolbar">
-					<a href="#" data-action="collapse">
-						<i class="ace-icon fa fa-chevron-up"></i>
-					</a>
-
-					<a href="#" data-action="close">
-						<i class="ace-icon fa fa-times"></i>
-					</a>
-				</div>
-			</div>
-
-			<div class="widget-body">
-				<div class="widget-main">
+	<div class="col-xs-12 col-md-12 col-lg-12">
+		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+			<div class="widget-main">
+				<div class="widget-body">
 					<div class="row">
 						<div class="col-xs-12 col-sm-6 col-md-6">
 							<div class="form-group row">
 								<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Supplier </label>
-								<div class="col-xs-7 col-sm-7 col-md-7">
+								<div class="col-xs-7 col-sm-7 col-md-7 no-padding-right">
 									<v-select v-bind:options="suppliers" v-model="selectedSupplier" v-on:input="onChangeSupplier" label="display_name"></v-select>
 								</div>
-								<div class="col-xs-1 col-sm-1 col-md-1" style="padding: 0;">
+								<div class="col-xs-1 col-sm-1 col-md-1">
 									<a href="<?= base_url('supplier') ?>" title="Add New Supplier" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
 								</div>
 							</div>
@@ -125,172 +94,203 @@
 								</div>
 							</div>
 						</div>
-
 						<div class="col-xs-12 col-sm-6 col-md-6">
-							<form v-on:submit.prevent="addToCart">
-								<div class="form-group row">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right">Category</label>
-									<div class="col-xs-11 col-md-7">
-									<v-select v-bind:options="categories" v-model="selectedCategory" label="ProductCategory_Name" v-on:input="categoryChange"></v-select>
-									</div>
-									<div class="col-xs-1 col-sm-1 col-md-1" style="padding: 0;">
-										<a href="<?= base_url('category') ?>" title="Add New Product" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
-									</div>
-									
+							<div class="form-group row">
+								<label class="col-xs-4 control-label no-padding-right"> Last Invoice </label>
+								<div class="col-xs-8">
+									<input type="text" id="invoice" name="invoice" class="form-control" v-model="purchase.invoice" readonly />
 								</div>
-								<div class="form-group row">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Product </label>
-									<div class="col-xs-7 col-sm-7 col-md-7">
-										<v-select @search="searchValue" v-bind:options="products" v-model="selectedProduct" label="display_text" v-on:input="onChangeProduct"></v-select>
-									</div>
-									<div class="col-xs-1 col-sm-1 col-md-1" style="padding: 0;">
-										<a href="<?= base_url('product') ?>" title="Add New Product" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
-									</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-xs-4 control-label no-padding-right"> Purchase For </label>
+								<div class="col-xs-8">
+									<v-select id="branchDropdown" v-bind:options="branches" v-model="selectedBranch" label="Brunch_name" disabled></v-select>
 								</div>
-								<div class="form-group row" style="display:none;">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Group Name</label>
-									<div class="col-xs-8 col-sm-8 col-md-8">
-										<input type="text" id="group" name="group" class="form-control" placeholder="Group name" readonly />
-									</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-xs-4 control-label no-padding-right"> Date </label>
+								<div class="col-xs-8">
+									<input class="form-control" id="purchaseDate" name="purchaseDate" class="form-control" type="date" v-model="purchase.purchaseDate" v-bind:disabled="userType == 'u' ? true : false" />
 								</div>
-
-								<div class="form-group row">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Purchase Rate </label>
-									<div class="col-xs-8 col-sm-8 col-md-8">
-										<input type="text" id="purchaseRate" name="purchaseRate" class="form-control" placeholder="Pur. Rate" v-model="selectedProduct.Product_Purchase_Rate" v-on:input="productTotal" required />
-									</div>
-								</div>
-
-								<div class="form-group row">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Box / Carton </label>
-									<div class="col-xs-4 col-sm-4 col-md-4">
-										<input type="number" step="0.01" min="0" id="quantity" name="quantity" class="form-control" placeholder="Carton" ref="quantity" v-model="selectedProduct.unitQty" v-on:input="productTotal" />
-									</div>
-									<label class="col-xs-1 col-sm-1 col-md-1 control-label no-padding-right"> Qty </label>
-									<div class="col-xs-3 col-sm-3 col-md-3">
-										<input type="number" step="0.01" min="0" class="form-control" placeholder="Qty" v-model="selectedProduct.qty" v-on:input="productTotal" />
-									</div>
-								</div>
-
-								<div class="form-group row" style="display:none;">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Cost </label>
-									<div class="col-xs-3 col-sm-3 col-md-3">
-										<input type="text" id="cost" name="cost" class="form-control" placeholder="Cost" readonly />
-									</div>
-								</div>
-
-								<div class="form-group row">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Selling Price </label>
-									<div class="col-xs-4 col-sm-4 col-md-4">
-										<input type="text" id="sellingPrice" name="sellingPrice" class="form-control" v-model="selectedProduct.Product_SellingPrice" />
-									</div>
-									<label class="col-xs-1 col-sm-1 col-md-1 control-label" style="padding: 0px;"> Total </label>
-									<div class="col-xs-3 col-sm-3 col-md-3">
-										<input type="text" id="productTotal" name="productTotal" class="form-control" readonly v-model="selectedProduct.total" />
-									</div>
-								</div>
-
-								<div class="form-group row">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Shelf </label>
-									<div class="col-xs-8 col-sm-8 col-md-8">
-										<input type="text" class="form-control" v-model="selectedProduct.shelf" readonly />
-									</div>
-								</div>
-
-								<div class="form-group row" v-bind:style="{display: selectedProduct.expired_available == 1 ? '' : 'none'}">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Expire Date </label>
-									<div class="col-xs-8 col-sm-8 col-md-8">
-										<input type="date" class="form-control" v-model="selectedProduct.expire_date" required />
-									</div>
-								</div>
-
-								<div class="form-group row">
-									<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> </label>
-									<div class="col-xs-8 col-sm-8 col-md-8">
-										<button type="submit" class="btn btn-default pull-right">Add Cart</button>
-									</div>
-								</div>
-							</form>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-
-		<div class="col-xs-12 col-md-12 col-lg-12" style="padding-left: 0px;padding-right: 0px;">
-			<div class="table-responsive">
-				<table class="table table-bordered" style="color:#000;margin-bottom: 5px;">
-					<thead>
-						<tr>
-							<th style="width:4%;color:#000;">SL</th>
-							<th style="width:20%;color:#000;">Product Name</th>
-							<th style="width:13%;color:#000;">Category</th>
-							<th style="width:11%;color:#000;">Purchase Rate</th>
-							<th style="width:15%;color:#000;">Quantity</th>
-							<th style="width:13%;color:#000;">Total Amount</th>
-							<th style="width:7%;color:#000;">Action</th>
-						</tr>
-					</thead>
-					<tbody style="display:none;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
-						<tr v-for="(product, sl) in cart">
-							<td>{{ sl + 1}}</td>
-							<td>{{ product.name }}</td>
-							<td>{{ product.categoryName }}</td>
-							<td>{{ product.purchaseRate }}</td>
-							<td>{{ product.quantity_text }}</td>
-							<td>{{ product.total }}</td>
-							<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
-						</tr>
-
-						<tr>
-							<td colspan="7"></td>
-						</tr>
-
-						<tr style="font-weight: bold;">
-							<td colspan="4">Note</td>
-							<td colspan="3">Total</td>
-						</tr>
-
-						<tr>
-							<td colspan="4"><textarea style="width: 100%;font-size:13px;" placeholder="Note" v-model="purchase.note"></textarea></td>
-							<td colspan="3" style="padding-top: 15px;font-size:18px;">{{ purchase.total }}</td>
-						</tr>
-					</tbody>
-				</table>
+		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+			<div class="widget-main" style="padding: 5px;">
+				<div class="widget-body">
+					<form @submit.prevent="addToCart">
+						<div class="row">
+							<div class="col-xs-12 col-md-1 no-padding-right paddingMobile">
+								<div class="form-group">
+									<label for="">Item No</label>
+									<input type="text" readonly v-model="selectedProduct.Product_Code" name="productCode" class="form-control" style="border-radius:0 !important;height:27px;">
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
+								<div class="form-group">
+									<label for="">Product Name</label>
+									<v-select :options="products" id="products" v-model="selectedProduct" label="display_text" @input="onChangeProduct" @search="productSearch"></v-select>
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+								<div class="form-group">
+									<label for="">Genetic</label>
+									<input type="text" readonly v-model="selectedProduct.genetic_name" class="form-control" style="border-radius:0 !important;height:27px;">
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+								<div class="form-group">
+									<label for="">Type</label>
+									<input type="text" readonly v-model="selectedProduct.ProductCategory_Name" class="form-control" style="border-radius:0 !important;height:27px;">
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+								<div class="form-group">
+									<label for=""> Exp. Date </label>
+									<input type="date" class="form-control" v-model="selectedProduct.expire_date" required style="border-radius:0 !important;height:27px;" />
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+								<div class="form-group">
+									<label for="">Pur. Rate</label>
+									<input type="text" v-model="selectedProduct.Product_Purchase_Rate" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+								<div class="form-group">
+									<label for="">Quantity</label>
+									<input type="text" id="quantity" ref="quantity" v-model="selectedProduct.qty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+								<div class="form-group">
+									<label for="">Conv. Qty</label>
+									<input type="text" id="unitQty" ref="unitQty" v-model="selectedProduct.unitQty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+								<div class="form-group">
+									<label for="">Sale Rate</label>
+									<input type="text" id="saleRate" ref="saleRate" v-model="selectedProduct.Product_SellingPrice" class="form-control" style="border-radius:0 !important;height:27px;">
+								</div>
+							</div>
+							<div class="col-xs-12 col-md-2" style="margin-top: 25px;">
+								<div class="form-group">
+									<button type="submit">Add</button>
+									<button type="button" @click="clearSelectedProduct">Clear</button>
+								</div>
+							</div>
+						</div>
+					</form>
+					<div class="row">
+						<div class="col-xs-12 col-md-12">
+							<div class="table-responsive">
+								<table class="table table-bordered" style="color:#000;margin-bottom: 5px;">
+									<thead>
+										<tr class="">
+											<th style="width:5%;color:#000;">Sl</th>
+											<th style="width:20%;color:#000;">Product Name</th>
+											<th style="width:15%;color:#000;">Category</th>
+											<th style="width:17%;color:#000;">Quantity</th>
+											<th style="width:11%;color:#000;">Rate</th>
+											<th style="width:12%;color:#000;">Total Amount</th>
+											<th style="width:8%;color:#000;">Action</th>
+										</tr>
+									</thead>
+									<tbody style="display:none;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
+										<tr v-for="(product, sl) in cart">
+											<td>{{ sl + 1 }}</td>
+											<td>{{ product.name }}</td>
+											<td>{{ product.categoryName }}</td>
+											<td>{{ product.quantity_text }}</td>
+											<td>{{ product.purchaseRate }}</td>
+											<td>{{ product.total }}</td>
+											<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-
-
-	<div class="col-xs-12 col-md-3 col-lg-3">
-		<div class="widget-box">
-			<div class="widget-header">
-				<h4 class="widget-title">Amount Details</h4>
-				<div class="widget-toolbar">
-					<a href="#" data-action="collapse">
-						<i class="ace-icon fa fa-chevron-up"></i>
-					</a>
-
-					<a href="#" data-action="close">
-						<i class="ace-icon fa fa-times"></i>
-					</a>
+	<div class="col-xs-12 col-md-8 col-lg-8">
+		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+			<div class="widget-main" style="padding: 5px;">
+				<div class="widget-body">
+					<div class="row">
+						<div class="col-xs-12 no-padding paddingMobile">
+							<div class="table-responsive">
+								<table style="color:#000;margin-bottom: 0px;border-collapse: collapse;width:100%;">
+									<tr>
+										<td>
+											<div class="form-group">
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Remark</label>
+												<div class="col-xs-8 col-md-9 no-padding-left">
+													<textarea style="width: 100%;font-size:13px;" placeholder="Remark" v-model="purchase.note"></textarea>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-
-			<div class="widget-body">
-				<div class="widget-main">
+		</div>
+	</div>
+	<div class="col-xs-12 col-md-4 col-lg-4">
+		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+			<div class="widget-main" style="padding: 5px;">
+				<div class="widget-body">
 					<div class="row">
-						<div class="col-xs-12">
+						<div class="col-xs-12 no-padding paddingMobile">
 							<div class="table-responsive">
-								<table style="color:#000;margin-bottom: 0px;">
+								<table style="color:#000;margin-bottom: 0px;border-collapse: collapse;width:100%;">
 									<tr>
 										<td>
 											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right">Sub Total</label>
-												<div class="col-xs-12">
-													<input type="number" id="subTotal" name="subTotal" class="form-control" v-model="purchase.subTotal" readonly />
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Sub Total</label>
+												<div class="col-xs-8 col-md-9 no-padding-left">
+													<input type="number" id="subTotal" class="form-control" v-model="purchase.subTotal" readonly />
 												</div>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div class="form-group">
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Vat</label>
+
+												<div class="col-xs-3 col-md-3 no-padding">
+													<input type="number" class="form-control" id="vatPercent" name="vatPercent" v-model="vatPercent" v-on:input="calculateTotal" />
+												</div>
+
+												<label class="col-xs-1 col-md-1 control-label no-padding-left">%</label>
+
+												<div class="col-xs-4 col-md-5 no-padding-left">
+													<input type="number" class="form-control" id="vat" name="vat" v-model="purchase.vat" readonly />
+												</div>
+
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div class="form-group">
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Discount</label>
+
+												<div class="col-xs-8 col-md-9 no-padding-left">
+													<input type="number" id="discount" class="form-control" v-model="purchase.discount" v-on:input="calculateTotal" />
+												</div>
+
 											</div>
 										</td>
 									</tr>
@@ -298,54 +298,28 @@
 									<tr>
 										<td>
 											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right"> Vat </label>
-												<div class="col-xs-12">
-													<input type="number" id="vatPercent" name="vatPercent" v-model="vatPercent" v-on:input="calculateTotal" style="width:50px;height:25px;" />
-													<span style="width:20px;"> % </span>
-													<input type="number" id="vat" name="vat" v-model="purchase.vat" readonly style="width:140px;height:25px;" />
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Transport</label>
+												<div class="col-xs-8 col-md-9 no-padding-left">
+													<input type="number" class="form-control" v-model="purchase.freight" v-on:input="calculateTotal" />
 												</div>
 											</div>
 										</td>
 									</tr>
-
 									<tr>
 										<td>
 											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right">Discount</label>
-												<div class="col-xs-12">
-													<input type="number" id="discount" name="discount" class="form-control" v-model="purchase.discount" v-on:input="calculateTotal" />
-												</div>
-											</div>
-										</td>
-									</tr>
-
-									<tr>
-										<td>
-											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right">Transport / Labour Cost</label>
-												<div class="col-xs-12">
-													<input type="number" id="freight" name="freight" class="form-control" v-model="purchase.freight" v-on:input="calculateTotal" />
-												</div>
-											</div>
-										</td>
-									</tr>
-
-									<tr>
-										<td>
-											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right">Total</label>
-												<div class="col-xs-12">
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Total</label>
+												<div class="col-xs-8 col-md-9 no-padding-left">
 													<input type="number" id="total" class="form-control" v-model="purchase.total" readonly />
 												</div>
 											</div>
 										</td>
 									</tr>
-
 									<tr>
 										<td>
 											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right">Paid</label>
-												<div class="col-xs-12">
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Paid</label>
+												<div class="col-xs-8 col-md-9 no-padding-left">
 													<input type="number" id="paid" class="form-control" v-model="purchase.paid" v-on:input="calculateTotal" v-bind:disabled="selectedSupplier.Supplier_Type == 'G' ? true : false" />
 												</div>
 											</div>
@@ -355,28 +329,16 @@
 									<tr>
 										<td>
 											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right">Previous Due</label>
-												<div class="col-xs-12">
-
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Due</label>
+												<div class="col-xs-4 col-md-4 no-padding-left">
+													<input type="number" id="due" class="form-control" v-model="purchase.due" readonly />
+												</div>
+												<div class="col-xs-4 col-md-5 no-padding-left">
+													<input type="number" id="previousDue" class="form-control" v-model="purchase.previousDue" readonly style="color:red;" />
 												</div>
 											</div>
 										</td>
 									</tr>
-
-									<tr>
-										<td>
-											<div class="form-group">
-												<label class="col-xs-12 control-label no-padding-right">Due</label>
-												<div class="col-xs-6">
-													<input type="number" id="due" name="due" class="form-control" v-model="purchase.due" readonly />
-												</div>
-												<div class="col-xs-6">
-													<input type="number" id="previousDue" name="previousDue" class="form-control" v-model="purchase.previousDue" readonly style="color:red;" />
-												</div>
-											</div>
-										</td>
-									</tr>
-
 									<tr>
 										<td>
 											<div class="form-group">
@@ -450,6 +412,7 @@
 					ProductCategory_Name: 'Select Category',
 				},
 				products2: [],
+				products: [],
 				selectedProduct: {
 					Product_SlNo: '',
 					Product_Code: '',
@@ -470,44 +433,24 @@
 				cart: [],
 				purchaseOnProgress: false,
 				userType: '<?php echo $this->session->userdata("accountType") ?>',
-
-
-				itemList: [{
-					name: 'John'
-				}, {
-					name: 'Doe'
-				}],
-				searchVal: "",
 			}
 		},
 		async created() {
-			this.getCategories();
 			await this.getSuppliers();
 			this.getBranches();
-			
+			this.getProducts();
+
 			if (this.purchase.purchaseId != 0) {
 				await this.getPurchase();
 			}
 		},
-		computed: {
-			products() {
-				if (this.searchVal == "" || this.selectedCategory != null) {
-					return this.products2;
-				} else {
-					return this.products2.filter(product => product.Product_Name.toLowerCase().startsWith(this.searchVal))
-				}
-			}
-		},
 		methods: {
-			getCategories() {
-				axios.get('/get_categories').then(res => {
-					this.categories = res.data;
-				})
+			searchValue() {},
+			productSearch(val) {
+				if (val) {
+					this.products = this.products2.filter(product => product.Product_Name.toLowerCase().startsWith(val))
+				}
 			},
-			searchValue(val) {
-				this.searchVal = val
-			},
-
 			getBranches() {
 				axios.get('/get_branches').then(res => {
 					this.branches = res.data;
@@ -528,12 +471,14 @@
 				})
 			},
 			getProducts() {
-				axios.post('/get_products', {isService: 'false',categoryId: this.selectedCategory.ProductCategory_SlNo}).then(res => {
+				axios.post('/get_products', {
+					isService: 'false',
+					categoryId: this.selectedCategory.ProductCategory_SlNo
+				}).then(res => {
 					this.products2 = res.data.map(function(item) {
 						item.expire_date = moment().format('YYYY-MM-DD');
 						return item;
 					});
-					// console.log(this.products2);
 				})
 			},
 			onChangeSupplier() {
@@ -567,61 +512,31 @@
 
 				this.calculateTotal();
 			},
-			categoryChange(){
-			 	if(this.selectedCategory == null || this.selectedCategory == ''){
-					this.selectedProduct = {
-						Product_SlNo: '',
-						Product_Code: '',
-						display_text: 'Select Product',
-						Product_Name: '',
-						Unit_Name: '',
-						quantity: '',
-						Product_Purchase_Rate: '',
-						Product_SellingPrice: 0.00,
-						total: '',
-						unitQty: 0,
-						qty: 0,
-						expire_date: moment().format('YYYY-MM-DD'),
-						shelf: '',
-						ProductCategory_Name: ''
-					}
-					this.searchVal = ""
-					return true;
-				}
-				if(this.selectedCategory != null || this.selectedCategory != '') {
-					this.selectedProduct = {
-						Product_SlNo: '',
-						display_text: 'Select Product',
-						expire_date: moment().format('YYYY-MM-DD'),
-					}
-					this.getProducts();
-				}
-			},
 			onChangeProduct() {
-				if (this.selectedProduct == null) {
-					this.selectedProduct = {
-						Product_SlNo: '',
-						Product_Code: '',
-						display_text: 'Select Product',
-						Product_Name: '',
-						Unit_Name: '',
-						quantity: '',
-						Product_Purchase_Rate: '',
-						Product_SellingPrice: 0.00,
-						total: '',
-						unitQty: 0,
-						qty: 0,
-						expire_date: moment().format('YYYY-MM-DD'),
-						shelf: '',
-						ProductCategory_Name: ''
-					}
-					this.searchVal = ""
-					return true
+				if (this.selectedProduct.Product_SlNo == '') {
+					return
 				}
+				// if (this.selectedProduct == null) {
+				// 	this.selectedProduct = {
+				// 		Product_SlNo: '',
+				// 		Product_Code: '',
+				// 		display_text: 'Select Product',
+				// 		Product_Name: '',
+				// 		Unit_Name: '',
+				// 		quantity: '',
+				// 		Product_Purchase_Rate: '',
+				// 		Product_SellingPrice: 0.00,
+				// 		total: '',
+				// 		unitQty: 0,
+				// 		qty: 0,
+				// 		expire_date: moment().format('YYYY-MM-DD'),
+				// 		shelf: '',
+				// 		ProductCategory_Name: ''
+				// 	}
+				// 	return
+				// }
 
-				if (this.selectedProduct.Product_Name != "") {
-					this.$refs.quantity.focus();
-				}
+				this.$refs.quantity.focus();
 
 			},
 			productTotal() {
@@ -636,17 +551,23 @@
 					alert('Expire date is required');
 					return;
 				}
-				if(this.selectedProduct.expired_available != 1) {
+				if (this.selectedProduct.expired_available != 1) {
 					this.selectedProduct.expire_date = "";
 				}
-				if(this.selectedCategory == null || this.selectedCategory == ''){
+				if (this.selectedCategory == null || this.selectedCategory == '') {
 					alert('Select Category');
 					return;
 				}
 
-				if(this.selectedProduct.total = null || this.selectedCategory.total == '') {
+				if (this.selectedProduct.total = null || this.selectedCategory.total == '') {
 					alert('Your total is empty');
 					return;
+				}
+
+				if (parseFloat(this.selectedProduct.quantity) == 0 || this.selectedProduct.quantity == undefined) {
+					alert("Quantity is empty");
+					document.querySelector("#quantity").focus()
+					return
 				}
 
 				let cartInd = this.cart.findIndex(p => p.productId == this.selectedProduct.Product_SlNo);
@@ -667,10 +588,11 @@
 					expireDate: this.selectedProduct.expire_date,
 					quantity_text: `${Math.floor(this.selectedProduct.quantity / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.selectedProduct.quantity % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`
 				}
-				
+
 				this.cart.push(product);
 				this.clearSelectedProduct();
 				this.calculateTotal();
+				document.querySelector("#products [type='search']").focus();
 			},
 			async removeFromCart(ind) {
 				if (this.cart[ind].id) {
@@ -735,7 +657,7 @@
 					alert('Cart is empty');
 					return;
 				}
-				this.purchase.ProductCategory_ID  = this.selectedCategory.ProductCategory_SlNo;
+				this.purchase.ProductCategory_ID = this.selectedCategory.ProductCategory_SlNo;
 				this.purchase.supplierId = this.selectedSupplier.Supplier_SlNo;
 				this.purchase.purchaseFor = this.selectedBranch.brunch_id;
 
@@ -828,6 +750,13 @@
 					this.suppliers.splice(gSupplierInd, 1);
 				})
 			}
-		}
+		},
+		mounted() {
+			window.addEventListener('keydown', (e) => {
+				if (e.key == 'Insert') {
+					this.savePurchase();
+				}
+			});
+		},
 	})
 </script>
