@@ -155,7 +155,7 @@
 									<input type="text" v-model="quantityText" readonly class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
 								<div class="form-group">
 									<label for=""> Exp. Date </label>
 									<v-select v-bind:options="dateStock" id="dateStock" v-model="selectedExpStock" label="expire_date" @input=dateOnChange></v-select>
@@ -179,10 +179,9 @@
 									<input type="text" id="unitQty" ref="unitQty" v-model="selectedProduct.unitQty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-2" style="margin-top: 25px;">
+							<div class="col-xs-12 col-md-1" style="margin-top: 25px;">
 								<div class="form-group">
-									<button type="submit">Add</button>
-									<button type="button" @click="clearProduct">Clear</button>
+									<button style="width: 100%;" type="submit">Add</button>
 								</div>
 							</div>
 						</div>
@@ -655,7 +654,7 @@
 					})
 				}
 
-				this.$refs.quantity.focus();
+				document.querySelector("#dateStock [type='search']").focus();
 			},
 			async dateOnChange() {
 				if ((this.selectedProduct.Product_SlNo != '' || this.selectedProduct.Product_SlNo != 0) && this.sales.isService == 'false') {

@@ -148,7 +148,7 @@
 									<input type="text" readonly v-model="selectedProduct.ProductCategory_Name" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
 								<div class="form-group">
 									<label for=""> Exp. Date </label>
 									<input type="date" class="form-control" v-model="selectedProduct.expire_date" required style="border-radius:0 !important;height:27px;" />
@@ -178,10 +178,9 @@
 									<input type="text" id="saleRate" ref="saleRate" v-model="selectedProduct.Product_SellingPrice" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-2" style="margin-top: 25px;">
+							<div class="col-xs-12 col-md-1" style="margin-top: 25px;">
 								<div class="form-group">
-									<button type="submit">Add</button>
-									<button type="button" @click="clearSelectedProduct">Clear</button>
+									<button style="width: 100%;" type="submit">Add</button>
 								</div>
 							</div>
 						</div>
