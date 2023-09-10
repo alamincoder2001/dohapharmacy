@@ -1,10 +1,12 @@
 <style>
 	.v-select {
 		margin-bottom: 5px;
+		background: #fff;
 	}
 
 	.v-select .dropdown-toggle {
 		padding: 0px;
+		border-radius: 0;
 	}
 
 	.v-select input[type=search],
@@ -49,43 +51,53 @@
 		}
 
 	}
+
+	.widget-body {
+		background: #d5d2d2;
+	}
 </style>
 
-<div id="sales" class="row">
+<div id="sales" class="row" style="background:#d5d2d2;">
 	<div class="col-xs-12 col-md-12 col-lg-12">
-		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main">
 				<div class="widget-body">
 					<div class="row">
 						<div class="col-xs-12 col-sm-6 col-md-6">
 							<div class="form-group row">
-								<label class="col-xs-4 control-label no-padding-right"> Customer </label>
-								<div class="col-xs-7 no-padding-right">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Sales From </label>
+								<div class="col-xs-8 col-md-9">
+									<v-select id="branchDropdown" disabled v-bind:options="branches" label="Brunch_name" v-model="selectedBranch"></v-select>
+								</div>
+							</div>
+							<div class="form-group row">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Customer </label>
+								<div class="col-xs-7 col-md-8 no-padding-right">
 									<v-select v-bind:options="customers" label="display_name" v-model="selectedCustomer" v-on:input="customerOnChange"></v-select>
 								</div>
-								<div class="col-xs-1 col-sm-1 col-md-1">
+								<div class="col-xs-1 col-md-1">
 									<a href="<?= base_url('customer') ?>" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank" title="Add New Customer"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
 								</div>
 							</div>
 
-							<div class="form-group row" style="display:none;" v-bind:style="{display: selectedCustomer.Customer_Type == 'G' ? '' : 'none'}">
-								<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Name </label>
-								<div class="col-xs-8 col-sm-8 col-md-8">
-									<input type="text" id="customerName" placeholder="Customer Name" class="form-control" v-model="selectedCustomer.Customer_Name" v-bind:disabled="selectedCustomer.Customer_Type == 'G' ? false : true" />
+							<div class="form-group row" style="display:none;" v-bind:style="{display: selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Type == 'N' ? '' : 'none'}">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Name </label>
+								<div class="col-xs-8 col-md-9">
+									<input type="text" id="customerName" placeholder="Customer Name" class="form-control" v-model="selectedCustomer.Customer_Name" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Type == 'N' ? false : true" />
 								</div>
 							</div>
 
 							<div class="form-group row">
-								<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Mobile No </label>
-								<div class="col-xs-8 col-sm-8 col-md-8">
-									<input type="text" id="mobileNo" placeholder="Mobile No" class="form-control" v-model="selectedCustomer.Customer_Mobile" v-bind:disabled="selectedCustomer.Customer_Type == 'G' ? false : true" />
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Mobile No </label>
+								<div class="col-xs-8 col-md-9">
+									<input type="text" id="mobileNo" placeholder="Mobile No" class="form-control" v-model="selectedCustomer.Customer_Mobile" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Type == 'N' ? false : true" />
 								</div>
 							</div>
 
 							<div class="form-group row">
-								<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Address </label>
-								<div class="col-xs-8 col-sm-8 col-md-8">
-									<textarea id="address" placeholder="Address" class="form-control" v-model="selectedCustomer.Customer_Address" v-bind:disabled="selectedCustomer.Customer_Type == 'G' ? false : true"></textarea>
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Address </label>
+								<div class="col-xs-8 col-md-9">
+									<textarea id="address" placeholder="Address" class="form-control" v-model="selectedCustomer.Customer_Address" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Type == 'N' ? false : true"></textarea>
 								</div>
 							</div>
 						</div>
@@ -94,12 +106,6 @@
 								<label class="col-xs-4 control-label no-padding-right"> Last Invoice </label>
 								<div class="col-xs-8">
 									<input type="text" id="invoiceNo" class="form-control" v-model="sales.invoiceNo" readonly />
-								</div>
-							</div>
-							<div class="form-group row">
-								<label class="col-xs-4 control-label no-padding-right"> Sales From </label>
-								<div class="col-xs-8">
-									<v-select id="branchDropdown" disabled v-bind:options="branches" label="Brunch_name" v-model="selectedBranch"></v-select>
 								</div>
 							</div>
 							<div class="form-group row">
@@ -120,7 +126,7 @@
 			</div>
 		</div>
 		<!-- background: #d3cccc; -->
-		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main" style="padding: 5px;">
 				<div class="widget-body">
 					<form @submit.prevent="addToCart">
@@ -191,7 +197,7 @@
 							<div class="table-responsive">
 								<table class="table table-bordered" style="color:#000;margin-bottom: 5px;">
 									<thead>
-										<tr class="">
+										<tr style="background: #d5d2d2;">
 											<th style="width:5%;color:#000;">Sl</th>
 											<th style="width:12%;color:#000;">Product Code</th>
 											<th style="width:20%;color:#000;">Product Name</th>
@@ -202,8 +208,8 @@
 											<th style="width:8%;color:#000;">Action</th>
 										</tr>
 									</thead>
-									<tbody style="display:none;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
-										<tr v-for="(product, sl) in cart">
+									<tbody style="display:none;background:#fff;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
+										<tr v-for="(product, sl) in cart" style="background: #6fffff;">
 											<td>{{ sl + 1 }}</td>
 											<td>{{ product.productCode }}</td>
 											<td>{{ product.name }}</td>
@@ -223,7 +229,7 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-8 col-lg-8">
-		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main" style="padding: 5px;">
 				<div class="widget-body">
 					<div class="row">
@@ -243,12 +249,34 @@
 									<tr>
 										<td>
 											<div class="form-group">
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Discount</label>
+
+												<div class="col-xs-3 col-md-3 no-padding">
+													<input type="number" id="discountPercent" class="form-control" v-model="discountPercent" v-on:input="calculateTotal" />
+												</div>
+
+												<label class="col-xs-1 col-md-1 control-label no-padding-left">%</label>
+
+												<div class="col-xs-4 col-md-5 no-padding-left">
+													<input type="number" id="discount" class="form-control" v-model="sales.discount" v-on:input="calculateTotal" />
+												</div>
+
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div class="form-group">
 												<label class="col-xs-4 col-md-3 control-label no-padding-right">Payment Type</label>
-												<div class="col-xs-8 col-md-9 no-padding-left">
+												<div class="col-xs-8 col-md-4 no-padding-left">
 													<select class="form-control" v-model="sales.payment_type" style="padding: 0px;border-radius: 3px;">
 														<option value="cash">Cash</option>
 														<option value="bank">Bank</option>
 													</select>
+												</div>
+												<label class="col-xs-4 col-md-1 control-label no-padding-right">Paid</label>
+												<div class="col-xs-8 col-md-4 no-padding-left">
+													<input type="number" id="paid" class="form-control" v-model="sales.paid" v-on:input="calculateTotal" v-bind:disabled="selectedCustomer.Customer_Type == 'G' ? true : false" />
 												</div>
 											</div>
 										</td>
@@ -260,6 +288,20 @@
 												<label class="col-xs-4 col-md-3 control-label no-padding-right">Bank Account</label>
 												<div class="col-xs-8 col-md-9 no-padding-left">
 													<v-select v-bind:options="accounts" v-model="selectedAccount" label="display_text" placeholder="Select account"></v-select>
+												</div>
+											</div>
+										</td>
+									</tr>
+
+									<tr>
+										<td>
+											<div class="form-group">
+												<label class="col-xs-4 col-md-3 control-label no-padding-right">Due</label>
+												<div class="col-xs-4 col-md-4 no-padding-left">
+													<input type="number" id="due" class="form-control" v-model="sales.due" readonly />
+												</div>
+												<div class="col-xs-4 col-md-5 no-padding-left">
+													<input type="number" id="previousDue" class="form-control" v-model="sales.previousDue" readonly style="color:red;" />
 												</div>
 											</div>
 										</td>
@@ -283,7 +325,7 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-4 col-lg-4">
-		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main" style="padding: 5px;">
 				<div class="widget-body">
 					<div class="row">
@@ -311,26 +353,6 @@
 											</div>
 										</td>
 									</tr>
-
-									<tr>
-										<td>
-											<div class="form-group">
-												<label class="col-xs-4 col-md-3 control-label no-padding-right">Discount</label>
-
-												<div class="col-xs-3 col-md-3 no-padding">
-													<input type="number" id="discountPercent" class="form-control" v-model="discountPercent" v-on:input="calculateTotal" />
-												</div>
-
-												<label class="col-xs-1 col-md-1 control-label no-padding-left">%</label>
-
-												<div class="col-xs-4 col-md-5 no-padding-left">
-													<input type="number" id="discount" class="form-control" v-model="sales.discount" v-on:input="calculateTotal" />
-												</div>
-
-											</div>
-										</td>
-									</tr>
-
 									<tr>
 										<td>
 											<div class="form-group">
@@ -347,30 +369,6 @@
 												<label class="col-xs-4 col-md-3 control-label no-padding-right">Total</label>
 												<div class="col-xs-8 col-md-9 no-padding-left">
 													<input type="number" id="total" class="form-control" v-model="sales.total" readonly />
-												</div>
-											</div>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<div class="form-group">
-												<label class="col-xs-4 col-md-3 control-label no-padding-right">Paid</label>
-												<div class="col-xs-8 col-md-9 no-padding-left">
-													<input type="number" id="paid" class="form-control" v-model="sales.paid" v-on:input="calculateTotal" v-bind:disabled="selectedCustomer.Customer_Type == 'G' ? true : false" />
-												</div>
-											</div>
-										</td>
-									</tr>
-
-									<tr>
-										<td>
-											<div class="form-group">
-												<label class="col-xs-4 col-md-3 control-label no-padding-right">Due</label>
-												<div class="col-xs-4 col-md-4 no-padding-left">
-													<input type="number" id="due" class="form-control" v-model="sales.due" readonly />
-												</div>
-												<div class="col-xs-4 col-md-5 no-padding-left">
-													<input type="number" id="previousDue" class="form-control" v-model="sales.previousDue" readonly style="color:red;" />
 												</div>
 											</div>
 										</td>
@@ -445,7 +443,7 @@
 					Customer_SlNo: '',
 					Customer_Code: '',
 					Customer_Name: '',
-					display_name: 'Select Customer',
+					display_name: 'Select Patient',
 					Customer_Mobile: '',
 					Customer_Address: '',
 					Customer_Type: ''
@@ -541,7 +539,16 @@
 						Customer_SlNo: 'C01',
 						Customer_Code: '',
 						Customer_Name: '',
-						display_name: 'General Customer',
+						display_name: 'Cash Patient',
+						Customer_Mobile: '',
+						Customer_Address: '',
+						Customer_Type: 'N'
+					})
+					this.customers.unshift({
+						Customer_SlNo: 'C01',
+						Customer_Code: '',
+						Customer_Name: '',
+						display_name: 'General Patient',
 						Customer_Mobile: '',
 						Customer_Address: '',
 						Customer_Type: 'G'
@@ -569,7 +576,7 @@
 					Customer_SlNo: '',
 					Customer_Code: '',
 					Customer_Name: '',
-					display_name: 'Select Customer',
+					display_name: 'Select Patient',
 					Customer_Mobile: '',
 					Customer_Address: '',
 					Customer_Type: ''
@@ -781,7 +788,7 @@
 			},
 			async saveSales() {
 				if (this.selectedCustomer.Customer_SlNo == '') {
-					alert('Select Customer');
+					alert('Select Patient');
 					return;
 				}
 				if (this.cart.length == 0) {
@@ -827,7 +834,7 @@
 					cart: this.cart
 				}
 
-				if (this.selectedCustomer.Customer_Type == 'G') {
+				if (this.selectedCustomer.Customer_Type == 'G' || this.selectedCustomer.Customer_Type == 'N') {
 					data.customer = this.selectedCustomer;
 				}
 				axios.post(url, data).then(async res => {

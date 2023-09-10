@@ -1,10 +1,12 @@
 <style>
 	.v-select {
 		margin-bottom: 5px;
+		background: #fff;
 	}
 
 	.v-select .dropdown-toggle {
 		padding: 0px;
+		border-radius: 0;
 	}
 
 	.v-select input[type=search],
@@ -47,6 +49,7 @@
 			font-size: 17px;
 		}
 	}
+
 	@media screen and (max-width: 600px) and (min-width: 320px) {
 		.paddingMobile {
 			padding-left: 12px !important;
@@ -54,62 +57,66 @@
 		}
 
 	}
+
+	.widget-body {
+		background: #d5d2d2;
+	}
 </style>
 
-<div class="row" id="purchase">
+<div class="row" id="purchase" style="background:#d5d2d2;">
 	<div class="col-xs-12 col-md-12 col-lg-12">
-		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main">
 				<div class="widget-body">
 					<div class="row">
 						<div class="col-xs-12 col-sm-6 col-md-6">
 							<div class="form-group row">
-								<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Supplier </label>
-								<div class="col-xs-7 col-sm-7 col-md-7 no-padding-right">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Supplier </label>
+								<div class="col-xs-7 col-md-8 no-padding-right">
 									<v-select v-bind:options="suppliers" v-model="selectedSupplier" v-on:input="onChangeSupplier" label="display_name"></v-select>
 								</div>
-								<div class="col-xs-1 col-sm-1 col-md-1">
+								<div class="col-xs-1 col-md-1">
 									<a href="<?= base_url('supplier') ?>" title="Add New Supplier" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
 								</div>
 							</div>
 
 							<div class="form-group row" style="display:none;" v-bind:style="{display: selectedSupplier.Supplier_Type == 'G' ? '' : 'none'}">
-								<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Name </label>
-								<div class="col-xs-8 col-sm-8 col-md-8">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Name </label>
+								<div class="col-xs-8 col-md-9">
 									<input type="text" placeholder="Supplier Name" class="form-control" v-model="selectedSupplier.Supplier_Name" />
 								</div>
 							</div>
 
 							<div class="form-group row">
-								<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Mobile No </label>
-								<div class="col-xs-8 col-sm-8 col-md-8">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Mobile No </label>
+								<div class="col-xs-8 col-md-9">
 									<input type="text" placeholder="Mobile No" class="form-control" v-model="selectedSupplier.Supplier_Mobile" v-bind:disabled="selectedSupplier.Supplier_Type == 'G' ? false : true" />
 								</div>
 							</div>
 
 							<div class="form-group row">
-								<label class="col-xs-4 col-sm-4 col-md-4 control-label no-padding-right"> Address </label>
-								<div class="col-xs-8 col-sm-8 col-md-8">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Address </label>
+								<div class="col-xs-8 col-md-9">
 									<textarea class="form-control" v-model="selectedSupplier.Supplier_Address" v-bind:disabled="selectedSupplier.Supplier_Type == 'G' ? false : true"></textarea>
 								</div>
 							</div>
 						</div>
 						<div class="col-xs-12 col-sm-6 col-md-6">
 							<div class="form-group row">
-								<label class="col-xs-4 control-label no-padding-right"> Last Invoice </label>
-								<div class="col-xs-8">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Last Invoice </label>
+								<div class="col-xs-8 col-md-9">
 									<input type="text" id="invoice" name="invoice" class="form-control" v-model="purchase.invoice" readonly />
 								</div>
 							</div>
 							<div class="form-group row">
-								<label class="col-xs-4 control-label no-padding-right"> Purchase For </label>
-								<div class="col-xs-8">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Purchase For </label>
+								<div class="col-xs-8 col-md-9">
 									<v-select id="branchDropdown" v-bind:options="branches" v-model="selectedBranch" label="Brunch_name" disabled></v-select>
 								</div>
 							</div>
 							<div class="form-group row">
-								<label class="col-xs-4 control-label no-padding-right"> Date </label>
-								<div class="col-xs-8">
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Date </label>
+								<div class="col-xs-8 col-md-9">
 									<input class="form-control" id="purchaseDate" name="purchaseDate" class="form-control" type="date" v-model="purchase.purchaseDate" v-bind:disabled="userType == 'u' ? true : false" />
 								</div>
 							</div>
@@ -119,7 +126,7 @@
 			</div>
 		</div>
 
-		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main" style="padding: 5px;">
 				<div class="widget-body">
 					<form @submit.prevent="addToCart">
@@ -190,7 +197,7 @@
 							<div class="table-responsive">
 								<table class="table table-bordered" style="color:#000;margin-bottom: 5px;">
 									<thead>
-										<tr class="">
+										<tr style="background: #d5d2d2;">
 											<th style="width:5%;color:#000;">Sl</th>
 											<th style="width:20%;color:#000;">Product Name</th>
 											<th style="width:15%;color:#000;">Category</th>
@@ -200,8 +207,8 @@
 											<th style="width:8%;color:#000;">Action</th>
 										</tr>
 									</thead>
-									<tbody style="display:none;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
-										<tr v-for="(product, sl) in cart">
+									<tbody style="display:none;background:#fff;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
+										<tr v-for="(product, sl) in cart" style="background: #6fffff;">
 											<td>{{ sl + 1 }}</td>
 											<td>{{ product.name }}</td>
 											<td>{{ product.categoryName }}</td>
@@ -220,7 +227,7 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-8 col-lg-8">
-		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main" style="padding: 5px;">
 				<div class="widget-body">
 					<div class="row">
@@ -246,7 +253,7 @@
 		</div>
 	</div>
 	<div class="col-xs-12 col-md-4 col-lg-4">
-		<div class="widget-box" style="border:3px solid rgb(211, 204, 204)">
+		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main" style="padding: 5px;">
 				<div class="widget-body">
 					<div class="row">
@@ -546,6 +553,10 @@
 				this.selectedProduct.total = this.selectedProduct.quantity * this.selectedProduct.Product_Purchase_Rate;
 			},
 			addToCart() {
+				if (this.selectedProduct.Product_SlNo == '') {
+					alert('Product name is empty');
+					return;
+				}
 				if (this.selectedProduct.expired_available == 1 && this.selectedProduct.expire_date == null) {
 					alert('Expire date is required');
 					return;
@@ -571,8 +582,7 @@
 
 				let cartInd = this.cart.findIndex(p => p.productId == this.selectedProduct.Product_SlNo);
 				if (cartInd > -1) {
-					alert('Product exists in cart');
-					return;
+					this.cart.splice(cartInd, 1);
 				}
 				let product = {
 					productId: this.selectedProduct.Product_SlNo,
