@@ -57,7 +57,7 @@
 	}
 </style>
 
-<div id="sales" class="row" style="background:#d5d2d2;">
+<div id="sales" class="row" style="background:#d5d2d2;padding-bottom:50px;">
 	<div class="col-xs-12 col-md-12 col-lg-12">
 		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main">
