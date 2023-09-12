@@ -71,7 +71,7 @@
 								</div>
 							</div>
 							<div class="form-group row">
-								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Customer </label>
+								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Patient </label>
 								<div class="col-xs-7 col-md-8 no-padding-right">
 									<v-select v-bind:options="customers" label="display_name" v-model="selectedCustomer" v-on:input="customerOnChange"></v-select>
 								</div>
@@ -80,24 +80,24 @@
 								</div>
 							</div>
 
-							<div class="form-group row" style="display:none;" v-bind:style="{display: selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Type == 'N' ? '' : 'none'}">
+							<div class="form-group row" style="display:none;" v-bind:style="{display: selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Name == '' ? '' : 'none'}">
 								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Name </label>
 								<div class="col-xs-8 col-md-9">
-									<input type="text" id="customerName" placeholder="Customer Name" class="form-control" v-model="selectedCustomer.Customer_Name" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Type == 'N' ? false : true" />
+									<input type="text" id="customerName" placeholder="Customer Name" class="form-control" v-model="selectedCustomer.Customer_Name" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Name == '' ? false : true" />
 								</div>
 							</div>
 
 							<div class="form-group row">
 								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Mobile No </label>
 								<div class="col-xs-8 col-md-9">
-									<input type="text" id="mobileNo" placeholder="Mobile No" class="form-control" v-model="selectedCustomer.Customer_Mobile" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Type == 'N' ? false : true" />
+									<input type="text" id="mobileNo" placeholder="Mobile No" class="form-control" v-model="selectedCustomer.Customer_Mobile" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Name == '' ? false : true" />
 								</div>
 							</div>
 
 							<div class="form-group row">
 								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Address </label>
 								<div class="col-xs-8 col-md-9">
-									<textarea id="address" placeholder="Address" class="form-control" v-model="selectedCustomer.Customer_Address" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Type == 'N' ? false : true"></textarea>
+									<textarea id="address" placeholder="Address" class="form-control" v-model="selectedCustomer.Customer_Address" v-bind:disabled="selectedCustomer.Customer_Type == 'G' || selectedCustomer.Customer_Name == '' ? false : true"></textarea>
 								</div>
 							</div>
 						</div>
@@ -134,7 +134,7 @@
 							<div class="col-xs-12 col-md-1 no-padding-right paddingMobile">
 								<div class="form-group">
 									<label for="">Item No</label>
-									<input type="text" readonly v-model="selectedProduct.Product_Code" name="productCode" class="form-control" style="border-radius:0 !important;height:27px;">
+									<input type="text" id="productCode" readonly v-model="selectedProduct.Product_Code" name="productCode" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
@@ -276,7 +276,7 @@
 												</div>
 												<label class="col-xs-4 col-md-1 control-label no-padding-right">Paid</label>
 												<div class="col-xs-8 col-md-4 no-padding-left">
-													<input type="number" id="paid" class="form-control" v-model="sales.paid" v-on:input="calculateTotal" v-bind:disabled="selectedCustomer.Customer_Type == 'G' ? true : false" />
+													<input type="number" id="paid" class="form-control" v-model="sales.paid" v-on:input="calculateTotal" v-bind:disabled="selectedCustomer.Customer_Type == 'G' && selectedCustomer.Customer_Name == '' ? true : false" />
 												</div>
 											</div>
 										</td>
@@ -440,13 +440,13 @@
 				},
 				customers: [],
 				selectedCustomer: {
-					Customer_SlNo: '',
+					Customer_SlNo: 'C01',
 					Customer_Code: '',
 					Customer_Name: '',
-					display_name: 'Select Patient',
+					display_name: 'Cash Patient',
 					Customer_Mobile: '',
 					Customer_Address: '',
-					Customer_Type: ''
+					Customer_Type: 'G'
 				},
 				oldCustomerId: null,
 				oldPreviousDue: 0,
@@ -542,15 +542,6 @@
 						display_name: 'Cash Patient',
 						Customer_Mobile: '',
 						Customer_Address: '',
-						Customer_Type: 'N'
-					})
-					this.customers.unshift({
-						Customer_SlNo: 'C01',
-						Customer_Code: '',
-						Customer_Name: '',
-						display_name: 'General Patient',
-						Customer_Mobile: '',
-						Customer_Address: '',
 						Customer_Type: 'G'
 					})
 				})
@@ -589,9 +580,9 @@
 				if (this.selectedCustomer.Customer_SlNo == '') {
 					return;
 				}
-				if (event.type == 'readystatechange') {
-					return;
-				}
+				// if (event.type == 'readystatechange') {
+				// 	return;
+				// }
 
 				if (this.sales.salesId != 0 && this.oldCustomerId != parseInt(this.selectedCustomer.Customer_SlNo)) {
 					let changeConfirm = confirm('Changing customer will set previous due to current due amount. Do you really want to change customer?');
@@ -620,6 +611,7 @@
 			},
 			async productOnChange() {
 				if (this.selectedProduct.Product_SlNo == '') {
+					document.querySelector("#productCode").focus();
 					return;
 				}
 				if (this.selectedProduct.Product_SlNo == '' || this.selectedProduct == null) {
@@ -736,7 +728,9 @@
 				this.cart.unshift(product);
 				this.clearProduct();
 				this.calculateTotal();
-				document.querySelector("#products [type='search']").focus();
+				document.querySelector("#productCode").focus();
+
+				this.products = [];
 			},
 			removeFromCart(ind) {
 				this.cart.splice(ind, 1);
@@ -776,7 +770,7 @@
 					this.discountPercent = (parseFloat(this.sales.discount) / parseFloat(this.sales.subTotal) * 100).toFixed(2);
 				}
 				this.sales.total = ((parseFloat(this.sales.subTotal) + parseFloat(this.sales.vat) + parseFloat(this.sales.transportCost)) - parseFloat(this.sales.discount)).toFixed(2);
-				if (this.selectedCustomer.Customer_Type == 'G') {
+				if (this.selectedCustomer.Customer_Name == '') {
 					this.sales.paid = this.sales.total;
 					this.sales.due = 0;
 				} else {
@@ -927,6 +921,9 @@
 			window.addEventListener('keydown', (e) => {
 				if (e.key == 'Insert') {
 					this.saveSales();
+				}
+				if (e.key == '/') {
+					document.querySelector("#discountPercent").focus();
 				}
 			});
 		},

@@ -118,7 +118,7 @@ class Sales extends CI_Controller
                     $customer['AddBy'] = $this->session->userdata("FullName");
                     $customer['AddTime'] = date("Y-m-d H:i:s");
                     $customer['Customer_brunchid'] = $this->session->userdata("BRANCHid");
-                    if ($customer['Customer_Type'] == 'N') {
+                    if (!empty($customer['Customer_Name'])) {
                         $customer['Customer_Type'] = 'retail';
                     }
                     $this->db->insert('tbl_customer', $customer);
@@ -127,27 +127,27 @@ class Sales extends CI_Controller
             }
 
             $sales = array(
-                'SaleMaster_InvoiceNo' => $invoice,
-                'SalseCustomer_IDNo' => $customerId,
-                'employee_id' => $data->sales->employeeId,
-                'SaleMaster_SaleDate' => $data->sales->salesDate,
-                'SaleMaster_SaleType' => $data->sales->salesType,
-                'SaleMaster_TotalSaleAmount' => $data->sales->total,
+                'SaleMaster_InvoiceNo'           => $invoice,
+                'SalseCustomer_IDNo'             => $customerId,
+                'employee_id'                    => $data->sales->employeeId,
+                'SaleMaster_SaleDate'            => $data->sales->salesDate,
+                'SaleMaster_SaleType'            => $data->sales->salesType,
+                'SaleMaster_TotalSaleAmount'     => $data->sales->total,
                 'SaleMaster_TotalDiscountAmount' => $data->sales->discount,
-                'SaleMaster_TaxAmount' => $data->sales->vat,
-                'SaleMaster_Freight' => $data->sales->transportCost,
-                'SaleMaster_SubTotalAmount' => $data->sales->subTotal,
-                'SaleMaster_PaidAmount' => $data->sales->paid,
-                'SaleMaster_DueAmount' => $data->sales->due,
-                'SaleMaster_Previous_Due' => $data->sales->previousDue,
-                'SaleMaster_Description' => $data->sales->note,
-                'payment_type' => $data->sales->payment_type,
-                'account_id' => isset($data->sales->accountId) ? $data->sales->accountId : null,
-                'Status' => 'a',
-                'is_service' => $data->sales->isService,
-                "AddBy" => $this->session->userdata("FullName"),
-                'AddTime' => date("Y-m-d H:i:s"),
-                'SaleMaster_branchid' => $this->session->userdata("BRANCHid")
+                'SaleMaster_TaxAmount'           => $data->sales->vat,
+                'SaleMaster_Freight'             => $data->sales->transportCost,
+                'SaleMaster_SubTotalAmount'      => $data->sales->subTotal,
+                'SaleMaster_PaidAmount'          => $data->sales->paid,
+                'SaleMaster_DueAmount'           => $data->sales->due,
+                'SaleMaster_Previous_Due'        => $data->sales->previousDue,
+                'SaleMaster_Description'         => $data->sales->note,
+                'payment_type'                   => $data->sales->payment_type,
+                'account_id'                     => isset($data->sales->accountId) ? $data->sales->accountId : null,
+                'Status'                         => 'a',
+                'is_service'                     => $data->sales->isService,
+                "AddBy"                          => $this->session->userdata("FullName"),
+                'AddTime'                        => date("Y-m-d H:i:s"),
+                'SaleMaster_branchid'            => $this->session->userdata("BRANCHid")
             );
 
             $this->db->insert('tbl_salesmaster', $sales);
@@ -157,16 +157,16 @@ class Sales extends CI_Controller
             // bank payment
             if (isset($data->sales->accountId)) {
                 $bank = array(
-                    'account_id' => $data->sales->accountId,
-                    'sale_id' => $salesId,
+                    'account_id'       => $data->sales->accountId,
+                    'sale_id'          => $salesId,
                     'transaction_date' => $data->sales->salesDate,
                     'transaction_type' => 'deposit',
-                    'amount' => $data->sales->paid,
-                    'note' => 'Sales amount payment in bank',
-                    'saved_by' =>  $this->session->userdata('userId'),
-                    'saved_datetime' => date('Y-m-d H:i:s'),
-                    'branch_id' => $this->session->userdata('BRANCHid'),
-                    'status' => 1
+                    'amount'           => $data->sales->paid,
+                    'note'             => 'Sales amount payment in bank',
+                    'saved_by'         => $this->session->userdata('userId'),
+                    'saved_datetime'   => date('Y-m-d H:i:s'),
+                    'branch_id'        => $this->session->userdata('BRANCHid'),
+                    'status'           => 1
                 );
 
                 $this->db->insert('tbl_bank_transactions', $bank);
@@ -174,18 +174,18 @@ class Sales extends CI_Controller
 
             foreach ($data->cart as $cartProduct) {
                 $saleDetails = array(
-                    'SaleMaster_IDNo' => $salesId,
-                    'Product_IDNo' => $cartProduct->productId,
+                    'SaleMaster_IDNo'           => $salesId,
+                    'Product_IDNo'              => $cartProduct->productId,
                     'SaleDetails_TotalQuantity' => $cartProduct->quantity,
-                    'Purchase_Rate' => $cartProduct->purchaseRate,
-                    'SaleDetails_Rate' => $cartProduct->salesRate,
-                    'SaleDetails_Tax' => $cartProduct->vat,
-                    'SaleDetails_TotalAmount' => $cartProduct->total,
-                    'expire_date' => $cartProduct->expireDate,
-                    'Status' => 'a',
-                    'AddBy' => $this->session->userdata("FullName"),
-                    'AddTime' => date('Y-m-d H:i:s'),
-                    'SaleDetails_BranchId' => $this->session->userdata('BRANCHid')
+                    'Purchase_Rate'             => $cartProduct->purchaseRate,
+                    'SaleDetails_Rate'          => $cartProduct->salesRate,
+                    'SaleDetails_Tax'           => $cartProduct->vat,
+                    'SaleDetails_TotalAmount'   => $cartProduct->total,
+                    'expire_date'               => $cartProduct->expireDate,
+                    'Status'                    => 'a',
+                    'AddBy'                     => $this->session->userdata("FullName"),
+                    'AddTime'                   => date('Y-m-d H:i:s'),
+                    'SaleDetails_BranchId'      => $this->session->userdata('BRANCHid')
                 );
 
                 $this->db->insert('tbl_saledetails', $saleDetails);
@@ -198,15 +198,15 @@ class Sales extends CI_Controller
                     and branch_id = ?
                 ", [$cartProduct->quantity, $cartProduct->productId, $this->session->userdata('BRANCHid')]);
             }
-            $currentDue = $data->sales->previousDue + ($data->sales->total - $data->sales->paid);
             //Send sms
-            $customerInfo = $this->db->query("select * from tbl_customer where Customer_SlNo = ?", $customerId)->row();
-            $sendToName = $customerInfo->owner_name != '' ? $customerInfo->owner_name : $customerInfo->Customer_Name;
-            $currency = $this->session->userdata('Currency_Name');
+            // $currentDue = $data->sales->previousDue + ($data->sales->total - $data->sales->paid);
+            // $customerInfo = $this->db->query("select * from tbl_customer where Customer_SlNo = ?", $customerId)->row();
+            // $sendToName = $customerInfo->owner_name != '' ? $customerInfo->owner_name : $customerInfo->Customer_Name;
+            // $currency = $this->session->userdata('Currency_Name');
 
-            $message = "Dear {$sendToName},\nYour bill is {$currency} {$data->sales->total}. Received {$currency} {$data->sales->paid} and current due is {$currency} {$currentDue} for invoice {$invoice}";
-            $recipient = $customerInfo->Customer_Mobile;
-            $this->sms->sendSms($recipient, $message);
+            // $message = "Dear {$sendToName},\nYour bill is {$currency} {$data->sales->total}. Received {$currency} {$data->sales->paid} and current due is {$currency} {$currentDue} for invoice {$invoice}";
+            // $recipient = $customerInfo->Customer_Mobile;
+            // $this->sms->sendSms($recipient, $message);
 
             $res = ['success' => true, 'message' => 'Sales Success', 'salesId' => $salesId];
         } catch (Exception $ex) {
