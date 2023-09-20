@@ -133,11 +133,11 @@
 						<div class="row">
 							<div class="col-xs-12 col-md-1 no-padding-right paddingMobile">
 								<div class="form-group">
-									<label for="">Item No</label>
-									<input type="text" readonly v-model="selectedProduct.Product_Code" name="productCode" class="form-control" style="border-radius:0 !important;height:27px;">
+									<label for="item">Item No</label>
+									<input type="text" id="productCode" readonly v-model="selectedProduct.Product_Code" name="productCode" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
+							<div class="col-xs-12 col-md-3 no-padding paddingMobile">
 								<div class="form-group">
 									<label for="">Product Name</label>
 									<v-select :options="products" id="products" v-model="selectedProduct" label="display_text" @input="onChangeProduct" @search="productSearch"></v-select>
@@ -145,44 +145,44 @@
 							</div>
 							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
-									<label for="">Genetic</label>
-									<input type="text" readonly v-model="selectedProduct.genetic_name" class="form-control" style="border-radius:0 !important;height:27px;">
-								</div>
-							</div>
-							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
-								<div class="form-group">
-									<label for="">Type</label>
-									<input type="text" readonly v-model="selectedProduct.ProductCategory_Name" class="form-control" style="border-radius:0 !important;height:27px;">
+									<label for="genetic">Genetic</label>
+									<input type="text" id="genetic" disabled v-model="selectedProduct.genetic_name" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
 								<div class="form-group">
+									<label for="">Type</label>
+									<input type="text" id="type" disabled v-model="selectedProduct.ProductCategory_Name" class="form-control" style="border-radius:0 !important;height:27px;">
+								</div>
+							</div>
+							<!-- <div class="col-xs-12 col-md-2 no-padding paddingMobile">
+								<div class="form-group">
 									<label for=""> Exp. Date </label>
 									<input type="date" class="form-control" v-model="selectedProduct.expire_date" required style="border-radius:0 !important;height:27px;" />
 								</div>
-							</div>
+							</div> -->
 							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
-									<label for="">Pur. Rate</label>
-									<input type="text" v-model="selectedProduct.Product_Purchase_Rate" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
+									<label for="purchaseRate">Pur. Rate</label>
+									<input type="number" step="0.01" min="0" id="purchaseRate" v-model="selectedProduct.Product_Purchase_Rate" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
-									<label for="">Quantity</label>
-									<input type="text" id="quantity" ref="quantity" v-model="selectedProduct.qty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
+									<label for="quantity">Quantity</label>
+									<input type="number" min="0" id="quantity" ref="quantity" v-model="selectedProduct.qty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
-									<label for="">Conv. Qty</label>
-									<input type="text" id="unitQty" ref="unitQty" v-model="selectedProduct.unitQty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
+									<label for="unitQty">Conv. Qty</label>
+									<input type="number" min="0" step="0.01" id="unitQty" ref="unitQty" v-model="selectedProduct.unitQty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
-									<label for="">Sale Rate</label>
-									<input type="text" id="saleRate" ref="saleRate" v-model="selectedProduct.Product_SellingPrice" class="form-control" style="border-radius:0 !important;height:27px;">
+									<label for="saleRate">Sale Rate</label>
+									<input type="number" min="0" step="0.01" id="saleRate" ref="saleRate" v-model="selectedProduct.Product_SellingPrice" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-1" style="margin-top: 25px;">
@@ -432,7 +432,7 @@
 					unitQty: 0,
 					qty: 0,
 					expired_available: 0,
-					expire_date: moment().format('YYYY-MM-DD'),
+					// expire_date: moment().format('YYYY-MM-DD'),
 					shelf: '',
 					ProductCategory_ID: 0
 				},
@@ -453,9 +453,7 @@
 		methods: {
 			searchValue() {},
 			productSearch(val) {
-				if (val) {
-					this.products = this.products2.filter(product => product.Product_Name.toLowerCase().startsWith(val))
-				}
+				this.products = this.products2.filter(product => product.Product_Name.toLowerCase().startsWith(val))
 			},
 			getBranches() {
 				axios.get('/get_branches').then(res => {
@@ -481,10 +479,7 @@
 					isService: 'false',
 					categoryId: this.selectedCategory.ProductCategory_SlNo
 				}).then(res => {
-					this.products2 = res.data.map(function(item) {
-						item.expire_date = moment().format('YYYY-MM-DD');
-						return item;
-					});
+					this.products2 = res.data;
 				})
 			},
 			onChangeSupplier() {
@@ -520,29 +515,29 @@
 			},
 			onChangeProduct() {
 				if (this.selectedProduct.Product_SlNo == '') {
+					document.querySelector("#productCode").focus();
+					return;
+				}
+				if (this.selectedProduct.Product_SlNo == '' || this.selectedProduct == null) {
+					this.selectedProduct = {
+						Product_SlNo: '',
+						display_text: 'Select Product',
+						Product_Name: '',
+						Unit_Name: '',
+						quantity: 0,
+						Product_Purchase_Rate: '',
+						Product_SellingPrice: 0.00,
+						vat: 0.00,
+						total: 0.00,
+						unitQty: 0,
+						qty: 0,
+						shelf: '',
+						ProductCategory_Name: ''
+					}
 					return
 				}
-				// if (this.selectedProduct == null) {
-				// 	this.selectedProduct = {
-				// 		Product_SlNo: '',
-				// 		Product_Code: '',
-				// 		display_text: 'Select Product',
-				// 		Product_Name: '',
-				// 		Unit_Name: '',
-				// 		quantity: '',
-				// 		Product_Purchase_Rate: '',
-				// 		Product_SellingPrice: 0.00,
-				// 		total: '',
-				// 		unitQty: 0,
-				// 		qty: 0,
-				// 		expire_date: moment().format('YYYY-MM-DD'),
-				// 		shelf: '',
-				// 		ProductCategory_Name: ''
-				// 	}
-				// 	return
-				// }
 
-				this.$refs.quantity.focus();
+				document.querySelector("#quantity").focus();
 
 			},
 			productTotal() {
@@ -557,13 +552,13 @@
 					alert('Product name is empty');
 					return;
 				}
-				if (this.selectedProduct.expired_available == 1 && this.selectedProduct.expire_date == null) {
-					alert('Expire date is required');
-					return;
-				}
-				if (this.selectedProduct.expired_available != 1) {
-					this.selectedProduct.expire_date = "";
-				}
+				// if (this.selectedProduct.expired_available == 1 && this.selectedProduct.expire_date == null) {
+				// 	alert('Expire date is required');
+				// 	return;
+				// }
+				// if (this.selectedProduct.expired_available != 1) {
+				// 	this.selectedProduct.expire_date = "";
+				// }
 				if (this.selectedCategory == null || this.selectedCategory == '') {
 					alert('Select Category');
 					return;
@@ -594,7 +589,7 @@
 					quantity: this.selectedProduct.quantity,
 					// total: this.selectedProduct.total,
 					total: this.selectedProduct.quantity * this.selectedProduct.Product_Purchase_Rate,
-					expireDate: this.selectedProduct.expire_date,
+					// expireDate: this.selectedProduct.expire_date,
 					quantity_text: `${Math.floor(this.selectedProduct.quantity / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.selectedProduct.quantity % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`
 				}
 
@@ -629,7 +624,7 @@
 					total: '',
 					unitQty: 0,
 					qty: 0,
-					expire_date: moment().format('YYYY-MM-DD'),
+					// expire_date: moment().format('YYYY-MM-DD'),
 					ProductCategory_ID: '',
 					shelf: ''
 				};
@@ -749,7 +744,7 @@
 							quantity: product.PurchaseDetails_TotalQuantity,
 							total: product.PurchaseDetails_TotalAmount,
 							quantity_text: `${Math.floor(product.PurchaseDetails_TotalQuantity / product.per_unit)} ${product.convert_text} ${product.PurchaseDetails_TotalQuantity % product.per_unit} ${product.Unit_Name}`,
-							expireDate: product.expire_date
+							// expireDate: product.expire_date
 						}
 
 						this.cart.push(cartProduct);

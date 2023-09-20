@@ -66,8 +66,8 @@ class Products extends CI_Controller {
 
             $product = (array)$productObj;
             $product['is_service'] = $productObj->is_service == true ? 'true' : 'false';
-            $product['expired_available'] = $productObj->is_expire;
-            unset($product['is_expire']);
+            // $product['expired_available'] = $productObj->is_expire;
+            // unset($product['is_expire']);
             $product['status'] = 'a';
             $product['AddBy'] = $this->session->userdata("FullName");
             $product['AddTime'] = date('Y-m-d H:i:s');
@@ -122,9 +122,9 @@ class Products extends CI_Controller {
             $product = (array)$productObj;
             unset($product['Product_SlNo']);
 
-            $product['expired_available'] = $productObj->is_expire;
-            unset($product['is_expire']);
-            $product['is_service'] = $productObj->is_service == true ? 'true' : 'false';
+            // $product['expired_available'] = $productObj->is_expire;
+            // unset($product['is_expire']);
+            // $product['is_service'] = $productObj->is_service == true ? 'true' : 'false';
             $product['UpdateBy'] = $this->session->userdata("FullName");
             $product['UpdateTime'] = date('Y-m-d H:i:s');
 

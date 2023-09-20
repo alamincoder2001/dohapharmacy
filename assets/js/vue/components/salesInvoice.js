@@ -41,15 +41,17 @@ const salesInvoice = Vue.component('sales-invoice', {
                                     <td>Sl.</td>
                                     <td>Description</td>
                                     <td>Quantity</td>
+                                    <td>Unit Name</td>
                                     <td>Unit Price</td>
-                                    <td>Total</td>
+                                    <td style="text-align:right;">Total</td>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(product, sl) in cart">
                                     <td>{{ sl + 1 }}</td>
                                     <td>{{ product.Product_Name }}</td>
-                                    <td>{{ product.quantity_text }}</td>
+                                    <td>{{ product.SaleDetails_TotalQuantity }}</td>
+                                    <td>{{ product.Unit_Name }}</td>
                                     <td>{{ product.SaleDetails_Rate }}</td>
                                     <td align="right">{{ product.SaleDetails_TotalAmount }}</td>
                                 </tr>

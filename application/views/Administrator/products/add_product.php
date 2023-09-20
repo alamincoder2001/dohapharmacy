@@ -171,12 +171,12 @@
 					</div>
 				</div>
 
-				<div class="form-group clearfix">
+				<!-- <div class="form-group clearfix">
 					<label class="control-label col-md-4">Is Expired Available:</label>
 					<div class="col-md-7">
 						<input type="checkbox" v-model="product.is_expire" @change="changeIsService">
 					</div>
-				</div>
+				</div> -->
 				
 				<div class="form-group clearfix">
 					<div class="col-md-7 col-md-offset-4">
@@ -262,7 +262,7 @@
 					convert_text: '',
 					per_unit: '',
 					shelf: '',
-					is_expire: false
+					// is_expire: false
 				},
 				products: [],
 				categories: [],
@@ -392,12 +392,11 @@
 				
 			},
 			editProduct(product){
-				// console.log(product);
 				let keys = Object.keys(this.product);
 				keys.forEach(key => {
 					this.product[key] = product[key];
 				})
-				this.product.is_expire = product.expired_available == 1 ? true : false;
+				// this.product.is_expire = product.expired_available == 1 ? true : false;
 				this.product.is_service = product.is_service == 'true' ? true : false;
 
 				this.selectedCategory = {
@@ -437,7 +436,7 @@
 					}
 				})
 
-				this.product.is_expire = false;
+				// this.product.is_expire = false;
 
 				this.selectedCategory = null;
 				this.selectedGenetic = null;

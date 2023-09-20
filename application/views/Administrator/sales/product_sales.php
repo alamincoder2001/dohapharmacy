@@ -137,54 +137,54 @@
 									<input type="text" id="productCode" readonly v-model="selectedProduct.Product_Code" name="productCode" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
+							<div class="col-xs-12 col-md-3 no-padding paddingMobile">
 								<div class="form-group">
 									<label for="">Product Name</label>
 									<v-select :options="products" id="products" v-model="selectedProduct" label="display_text" @input="productOnChange" @search="productSearch"></v-select>
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
 								<div class="form-group">
 									<label for="">Genetic</label>
-									<input type="text" readonly v-model="selectedProduct.genetic_name" class="form-control" style="border-radius:0 !important;height:27px;">
+									<input type="text" disabled v-model="selectedProduct.genetic_name" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
 								<div class="form-group">
 									<label for="">Type</label>
-									<input type="text" readonly v-model="selectedProduct.ProductCategory_Name" class="form-control" style="border-radius:0 !important;height:27px;">
+									<input type="text" disabled v-model="selectedProduct.ProductCategory_Name" class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
 									<label for="">Stock</label>
-									<input type="text" v-model="quantityText" readonly class="form-control" style="border-radius:0 !important;height:27px;">
+									<input type="text" v-model="productStock" disabled class="form-control" style="border-radius:0 !important;height:27px;">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-2 no-padding paddingMobile">
+							<!-- <div class="col-xs-12 col-md-2 no-padding paddingMobile">
 								<div class="form-group">
 									<label for=""> Exp. Date </label>
 									<v-select v-bind:options="dateStock" id="dateStock" v-model="selectedExpStock" label="expire_date" @input=dateOnChange></v-select>
 								</div>
-							</div>
+							</div> -->
 							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
 									<label for="">Sale Rate</label>
-									<input type="text" id="saleRate" ref="saleRate" v-model="selectedProduct.Product_SellingPrice" @input="productTotal" class="form-control" style="border-radius:0 !important;height:27px;">
+									<input type="number" min="0" step="0.01" id="saleRate" ref="saleRate" v-model="selectedProduct.Product_SellingPrice" @input="productTotal" class="form-control" style="border-radius:0 !important;height:27px;" :disabled="userType == 'u' ? true: false" />
 								</div>
 							</div>
 							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
-									<label for="">Quantity</label>
-									<input type="text" id="quantity" ref="quantity" v-model="selectedProduct.qty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
+									<label for="quantity">Quantity</label>
+									<input type="number" min="0" step="0.01" id="quantity" ref="quantity" v-model="selectedProduct.qty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
 								</div>
 							</div>
-							<div class="col-xs-12 col-md-1 no-padding paddingMobile">
+							<!-- <div class="col-xs-12 col-md-1 no-padding paddingMobile">
 								<div class="form-group">
 									<label for="">Conv. Qty</label>
 									<input type="text" id="unitQty" ref="unitQty" v-model="selectedProduct.unitQty" class="form-control" style="border-radius:0 !important;height:27px;" @input="productTotal">
 								</div>
-							</div>
+							</div> -->
 							<div class="col-xs-12 col-md-1" style="margin-top: 25px;">
 								<div class="form-group">
 									<button style="width: 100%;" type="submit">Add</button>
@@ -214,7 +214,7 @@
 											<td>{{ product.productCode }}</td>
 											<td>{{ product.name }}</td>
 											<td>{{ product.categoryName }}</td>
-											<td>{{ product.quantity_text }}</td>
+											<td>{{ product.quantity }}</td>
 											<td>{{ product.salesRate }}</td>
 											<td>{{ product.total }}</td>
 											<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
@@ -475,10 +475,10 @@
 				productPurchaseRate: '',
 				productStockText: '',
 				productStock: '',
-				dateStock: '',
-				selectedExpStock: {
-					expire_date: ''
-				},
+				// dateStock: '',
+				// selectedExpStock: {
+				// 	expire_date: ''
+				// },
 				quantityText: '',
 				saleOnProgress: false,
 				sales_due_on_update: 0,
@@ -641,46 +641,46 @@
 						return res.data[0].current_quantity;
 					})
 					this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
-					this.quantityText = this.selectedProduct.per_unit == 0 ? `${this.productStock} ${this.selectedProduct.Unit_Name}` : `${Math.floor(this.productStock / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.productStock % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`;
+					// this.quantityText = this.selectedProduct.per_unit == 0 ? `${this.productStock} ${this.selectedProduct.Unit_Name}` : `${Math.floor(this.productStock / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.productStock % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`;
 				}
 
-				if ((this.selectedProduct.Product_SlNo != '' || this.selectedProduct.Product_SlNo != 0) && this.sales.isService == 'false') {
-					this.dateStock = await axios.post('/get_available_date', {
-						productId: this.selectedProduct.Product_SlNo,
-						expired_available: this.selectedProduct.expired_available
-					}).then(res => {
-						return res.data.filter(item => item.current_quantity > 0);
-					})
-				}
+				// if ((this.selectedProduct.Product_SlNo != '' || this.selectedProduct.Product_SlNo != 0) && this.sales.isService == 'false') {
+				// 	this.dateStock = await axios.post('/get_available_date', {
+				// 		productId: this.selectedProduct.Product_SlNo,
+				// 		expired_available: this.selectedProduct.expired_available
+				// 	}).then(res => {
+				// 		return res.data.filter(item => item.current_quantity > 0);
+				// 	})
+				// }
 
-				document.querySelector("#dateStock [type='search']").focus();
+				document.querySelector("#quantity").focus();
 			},
-			async dateOnChange() {
-				if ((this.selectedProduct.Product_SlNo != '' || this.selectedProduct.Product_SlNo != 0) && this.sales.isService == 'false') {
-					this.productStock = await axios.post('/get_product_stock', {
-						productId: this.selectedProduct.Product_SlNo,
-						expired_available: this.selectedProduct.expired_available,
-						expiredDate: this.selectedExpStock.expire_date
-					}).then(res => {
-						return res.data[0].current_quantity;
-					})
-					this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
-					this.quantityText = this.selectedProduct.per_unit == 0 ? `${this.productStock} ${this.selectedProduct.Unit_Name}` : `${Math.floor(this.productStock / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.productStock % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`;
-				}
-			},
+			// async dateOnChange() {
+			// 	if ((this.selectedProduct.Product_SlNo != '' || this.selectedProduct.Product_SlNo != 0) && this.sales.isService == 'false') {
+			// 		this.productStock = await axios.post('/get_product_stock', {
+			// 			productId: this.selectedProduct.Product_SlNo,
+			// 			expired_available: this.selectedProduct.expired_available,
+			// 			expiredDate: this.selectedExpStock.expire_date
+			// 		}).then(res => {
+			// 			return res.data[0].current_quantity;
+			// 		})
+			// 		this.productStockText = this.productStock > 0 ? "Available Stock" : "Stock Unavailable";
+			// 		this.quantityText = this.selectedProduct.per_unit == 0 ? `${this.productStock} ${this.selectedProduct.Unit_Name}` : `${Math.floor(this.productStock / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.productStock % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`;
+			// 	}
+			// },
 			toggleProductPurchaseRate() {
 				//this.productPurchaseRate = this.productPurchaseRate == '' ? this.selectedProduct.Product_Purchase_Rate : '';
 				this.$refs.productPurchaseRate.type = this.$refs.productPurchaseRate.type == 'text' ? 'password' : 'text';
 			},
 			addToCart() {
-				if (this.selectedProduct.expired_available == 1) {
-					if (this.selectedExpStock.expire_date == "" || this.selectedExpStock.expire_date == null || this.selectedExpStock.expire_date == 0) {
-						alert("Select Expire Date First!");
-						return;
-					}
-				} else {
-					this.selectedExpStock.expire_date = null;
-				}
+				// if (this.selectedProduct.expired_available == 1) {
+				// 	if (this.selectedExpStock.expire_date == "" || this.selectedExpStock.expire_date == null || this.selectedExpStock.expire_date == 0) {
+				// 		alert("Select Expire Date First!");
+				// 		return;
+				// 	}
+				// } else {
+				// 	this.selectedExpStock.expire_date = null;
+				// }
 
 				let product = {
 					productId: this.selectedProduct.Product_SlNo,
@@ -691,13 +691,14 @@
 					vat: this.selectedProduct.vat,
 					quantity: this.selectedProduct.quantity,
 					total: this.selectedProduct.total,
-					expireDate: this.selectedExpStock.expire_date,
+					// expireDate: this.selectedExpStock.expire_date,
 					purchaseRate: this.selectedProduct.Product_Purchase_Rate,
-					quantity_text: `${Math.floor(this.selectedProduct.quantity / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.selectedProduct.quantity % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`
+					// quantity_text: `${Math.floor(this.selectedProduct.quantity / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.selectedProduct.quantity % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`
 				}
 
 				if (product.productId == '') {
 					alert('Select Product');
+					document.querySelector("#products [type='search']").focus();
 					return;
 				}
 
@@ -906,7 +907,7 @@
 							total: product.SaleDetails_TotalAmount,
 							expireDate: product.expire_date,
 							purchaseRate: product.Purchase_Rate,
-							quantity_text: `${Math.floor(product.SaleDetails_TotalQuantity / product.per_unit)} ${product.convert_text} ${product.SaleDetails_TotalQuantity % product.per_unit} ${product.Unit_Name}`
+							// quantity_text: `${Math.floor(product.SaleDetails_TotalQuantity / product.per_unit)} ${product.convert_text} ${product.SaleDetails_TotalQuantity % product.per_unit} ${product.Unit_Name}`
 						}
 
 						this.cart.push(cartProduct);
