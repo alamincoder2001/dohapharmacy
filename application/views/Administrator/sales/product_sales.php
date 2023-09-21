@@ -443,7 +443,7 @@
 					salesBy: '<?php echo $this->session->userdata("FullName"); ?>',
 					salesType: 'retail',
 					salesFrom: '',
-					salesDate: '',
+					salesDate: moment().format('YYYY-MM-DD'),
 					customerId: '',
 					employeeId: null,
 					subTotal: 0.00,
@@ -526,7 +526,6 @@
 			}
 		},
 		async created() {
-			this.sales.salesDate = moment().format('YYYY-MM-DD');
 			await this.getEmployees();
 			await this.getBranches();
 			await this.getCustomers();
@@ -727,7 +726,7 @@
 				}
 
 				if (product.productId == '') {
-					alert('Select Product');
+					//alert('Select Product');
 					document.querySelector("#products [type='search']").focus();
 					return;
 				}
@@ -748,6 +747,7 @@
 
 				if (product.quantity > this.productStock && this.sales.isService == 'false') {
 					alert('Stock unavailable');
+					document.querySelector("#products [type='search']").focus();
 					return;
 				}
 
