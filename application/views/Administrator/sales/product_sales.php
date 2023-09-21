@@ -1,12 +1,23 @@
 <style>
 	.v-select {
-		margin-bottom: 5px;
 		background: #fff;
+		border-radius: 10px;
+		margin-top: 1px;
+		margin-bottom: 5px;
+	}
+
+	#products {
+		border-radius: 0;
 	}
 
 	.v-select .dropdown-toggle {
 		padding: 0px;
 		border-radius: 0;
+	}
+
+	.v-select.searchable .dropdown-toggle {
+		border: 0;
+		border-radius: 10px;
 	}
 
 	.v-select input[type=search],
@@ -55,15 +66,23 @@
 	.widget-body {
 		background: #d5d2d2;
 	}
+
+	input[type=text],
+	input[type=number],
+	input[type=date],
+	select,
+	textarea {
+		border-radius: 10px !important;
+	}
 </style>
 
 <div id="sales" class="row" style="background:#d5d2d2;padding-bottom:50px;">
-	<div class="col-xs-12 col-md-12 col-lg-12">
-		<div class="widget-box" style="border: 2px solid gray;">
+	<div class="col-xs-12 col-md-5">
+		<div class="widget-box" style="border: 2px solid gray;padding-right: 35px;">
 			<div class="widget-main">
 				<div class="widget-body">
 					<div class="row">
-						<div class="col-xs-12 col-sm-6 col-md-6">
+						<div class="col-xs-12 col-md-12">
 							<div class="form-group row">
 								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Sales From </label>
 								<div class="col-xs-8 col-md-9">
@@ -72,11 +91,11 @@
 							</div>
 							<div class="form-group row">
 								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Patient </label>
-								<div class="col-xs-7 col-md-8 no-padding-right">
+								<div class="col-xs-7 col-md-8">
 									<v-select v-bind:options="customers" label="display_name" v-model="selectedCustomer" v-on:input="customerOnChange"></v-select>
 								</div>
-								<div class="col-xs-1 col-md-1">
-									<a href="<?= base_url('customer') ?>" class="btn btn-xs btn-danger" style="height: 25px; border: 0; width: 27px; margin-left: -10px;" target="_blank" title="Add New Customer"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 5px;"></i></a>
+								<div class="col-xs-1 col-md-1 no-padding-left">
+									<a href="<?= base_url('customer') ?>" class="btn btn-xs btn-danger" style="height: 24px;border: 0px;width: 27px;margin-left: -10px;margin-top: 2px;border-radius: 10px;" target="_blank" title="Add New Customer"><i class="fa fa-plus" aria-hidden="true" style="margin-top: 4px;"></i></a>
 								</div>
 							</div>
 
@@ -101,7 +120,18 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xs-12 col-sm-6 col-md-6">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3"></div>
+	<div class="col-xs-12 col-md-4">
+		<div class="widget-box" style="border: 2px solid gray;">
+			<div class="widget-main">
+				<div class="widget-body">
+					<div class="row">
+						<div class="col-xs-12 col-md-12">
 							<div class="form-group row">
 								<label class="col-xs-4 control-label no-padding-right"> Last Invoice </label>
 								<div class="col-xs-8">
@@ -125,7 +155,8 @@
 				</div>
 			</div>
 		</div>
-		<!-- background: #d3cccc; -->
+	</div>
+	<div class="col-xs-12 col-md-12">
 		<div class="widget-box" style="border: 2px solid gray;">
 			<div class="widget-main" style="padding: 5px;">
 				<div class="widget-body">
@@ -635,8 +666,7 @@
 
 				if ((this.selectedProduct.Product_SlNo != '' || this.selectedProduct.Product_SlNo != 0) && this.sales.isService == 'false') {
 					this.productStock = await axios.post('/get_product_stock', {
-						productId: this.selectedProduct.Product_SlNo,
-						expired_available: this.selectedProduct.expired_available
+						productId: this.selectedProduct.Product_SlNo
 					}).then(res => {
 						return res.data[0].current_quantity;
 					})

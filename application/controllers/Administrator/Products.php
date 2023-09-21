@@ -210,9 +210,9 @@ class Products extends CI_Controller {
         $date = date('Y-m-d');
         $branchId = $this->session->userdata('BRANCHid');
         
-        if(isset($data->expiredDate) && $data->expiredDate != '' && $data->expiredDate != null) {
-            $expireDate = $data->expiredDate;
-        }
+        // if(isset($data->expiredDate) && $data->expiredDate != '' && $data->expiredDate != null) {
+        //     $expireDate = $data->expiredDate;
+        // }
         $clauses = "";
         $stock = 0;
         if(isset($data->productId) && $data->productId != null){
@@ -228,8 +228,6 @@ class Products extends CI_Controller {
                         join tbl_purchasemaster pm on pm.PurchaseMaster_SlNo = pd.PurchaseMaster_IDNo
                         where pd.Product_IDNo = p.Product_SlNo
                         and pd.PurchaseDetails_branchID = '$branchId'
-                        " . (isset($expireDate) && $expireDate != null ? " and pd.expire_date = '$expireDate'" : "") . "
-                        and (( p.expired_available = 1 and pd.expire_date >= '$date') or (p.expired_available <> 1))
                         and pd.Status = 'a'
                     ) as purchased_quantity,
                             
@@ -238,8 +236,6 @@ class Products extends CI_Controller {
                         join tbl_purchasereturn pr on pr.PurchaseReturn_SlNo = prd.PurchaseReturn_SlNo
                         where prd.PurchaseReturnDetailsProduct_SlNo = p.Product_SlNo
                         and prd.PurchaseReturnDetails_brachid = '$branchId'
-                        " . (isset($expireDate) && $expireDate != null ? " and prd.PurchaseReturnDetails_ProductExp_date = '$expireDate'" : "") . "
-                        and (( p.expired_available = 1 and prd.PurchaseReturnDetails_ProductExp_date >= '$date') or (p.expired_available <> 1))
                         and prd.Status = 'a'
                     ) as purchase_returned_quantity,
                             
@@ -248,8 +244,6 @@ class Products extends CI_Controller {
                         join tbl_salesmaster sm on sm.SaleMaster_SlNo = sd.SaleMaster_IDNo
                         where sd.Product_IDNo = p.Product_SlNo
                         and sd.SaleDetails_BranchId  = '$branchId'
-                        " . (isset($expireDate) && $expireDate != null ? " and sd.expire_date = '$expireDate'" : "") . "
-                        and (( p.expired_available = 1 and sd.expire_date >= '$date') or (p.expired_available <> 1))
                         and sd.Status = 'a'
                     ) as sold_quantity,
                             
@@ -258,8 +252,6 @@ class Products extends CI_Controller {
                         join tbl_salereturn sr on sr.SaleReturn_SlNo = srd.SaleReturn_IdNo
                         where srd.SaleReturnDetailsProduct_SlNo = p.Product_SlNo
                         and srd.SaleReturnDetails_brunchID = '$branchId'
-                        " . (isset($expireDate) && $expireDate != null ? " and srd.SaleReturnDetails_ProductExp_date = '$expireDate'" : "") . "
-                        and (( p.expired_available = 1 and srd.SaleReturnDetails_ProductExp_date >= '$date') or (p.expired_available <> 1))
                         and srd.Status = 'a'
                     ) as sales_returned_quantity,
                             
@@ -268,8 +260,6 @@ class Products extends CI_Controller {
                         join tbl_damage dm on dm.Damage_SlNo = dmd.Damage_SlNo
                         where dmd.Product_SlNo = p.Product_SlNo
                         and dm.Damage_brunchid = '$branchId'
-                        " . (isset($expireDate) && $expireDate != null ? " and dmd.damage_productExpire = '$expireDate'" : "") . "
-                        and (( p.expired_available = 1 and dmd.damage_productExpire >= '$date') or (p.expired_available <> 1))
                         and dmd.status = 'a'
                     ) as damaged_quantity,
                             
@@ -364,7 +354,6 @@ class Products extends CI_Controller {
             p.Product_Purchase_Rate,
             p.per_unit,
             p.convert_text,
-            p.expire_date,
             pc.ProductCategory_Name,
             b.brand_name,
             u.Unit_Name,
@@ -372,37 +361,27 @@ class Products extends CI_Controller {
             (
                 select ifnull(sum(pd.PurchaseDetails_TotalQuantity), 0)
                 from tbl_purchasedetails pd where pd.Product_IDNo = p.Product_SlNo 
-                and pd.Status = 'a' and
-               (( p.expired_available = 1 and pd.expire_date >= '$date') or
-                (p.expired_available <> 1))
+                and pd.Status = 'a'
             ) as purchased_quantity,
             (
                 select ifnull(sum(sd.SaleDetails_TotalQuantity), 0) 
                 from tbl_saledetails sd where sd.Product_IDNo = p.Product_SlNo
-                and sd.Status = 'a' and 
-                (( p.expired_available = 1 and sd.expire_date >= '$date') or
-                (p.expired_available <> 1))
+                and sd.Status = 'a'
             ) as sold_quantity,
             ( 
                 select ifnull(sum(prd.PurchaseReturnDetails_ReturnQuantity), 0) 
                 from tbl_purchasereturndetails prd where prd.PurchaseReturnDetailsProduct_SlNo = p.Product_SlNo 
-                and prd.Status = 'a' and 
-                (( p.expired_available = 1 and prd.PurchaseReturnDetails_ProductExp_date >= '$date') or
-                (p.expired_available <> 1))
+                and prd.Status = 'a'
             ) as purchase_returned_quantity,
             (
                 select ifnull(sum(srd.SaleReturnDetails_ReturnQuantity), 0)
                 from tbl_salereturndetails srd where srd.SaleReturnDetailsProduct_SlNo = p.Product_SlNo 
-                and srd.Status = 'a' and 
-                (( p.expired_available = 1 and srd.SaleReturnDetails_ProductExp_date >= '$date') or
-                (p.expired_available <> 1))
+                and srd.Status = 'a'
             ) as sales_returned_quantity,
             ( 
                 select ifnull(sum(dmd.DamageDetails_DamageQuantity), 0) 
                 from tbl_damagedetails dmd where dmd.Product_SlNo = p.Product_SlNo 
-                and dmd.status = 'a' and 
-                (( p.expired_available = 1 and dmd.damage_productExpire >= '$date') or
-                (p.expired_available <> 1))
+                and dmd.status = 'a'
             ) as damaged_quantity,
             (select (purchased_quantity + sales_returned_quantity) - (sold_quantity + purchase_returned_quantity + damaged_quantity)) as current_quantity,
             (select p.Product_Purchase_Rate * current_quantity) as stock_value
@@ -523,8 +502,6 @@ class Products extends CI_Controller {
                     and pd.PurchaseDetails_branchID = '$branchId'
                     and pd.Status = 'a'
                     " . (isset($data->date) && $data->date != null ? " and pm.PurchaseMaster_OrderDate <= '$data->date'" : "") . "
-                    and (( p.expired_available = 1 and pd.expire_date >= '$date') or
-                    (p.expired_available <> 1))
                 ) as purchased_quantity,
                         
                 (select ifnull(sum(prd.PurchaseReturnDetails_ReturnQuantity), 0) 
@@ -533,8 +510,6 @@ class Products extends CI_Controller {
                     where prd.PurchaseReturnDetailsProduct_SlNo = p.Product_SlNo
                     and prd.PurchaseReturnDetails_brachid = '$branchId'
                     " . (isset($data->date) && $data->date != null ? " and pr.PurchaseReturn_ReturnDate <= '$data->date'" : "") . "
-                    and (( p.expired_available = 1 and prd.PurchaseReturnDetails_ProductExp_date >= '$date') or
-                    (p.expired_available <> 1))
                 ) as purchase_returned_quantity,
                         
                 (select ifnull(sum(sd.SaleDetails_TotalQuantity), 0) 
@@ -544,8 +519,6 @@ class Products extends CI_Controller {
                     and sd.SaleDetails_BranchId  = '$branchId'
                     and sd.Status = 'a'
                     " . (isset($data->date) && $data->date != null ? " and sm.SaleMaster_SaleDate <= '$data->date'" : "") . "
-                    and (( p.expired_available = 1 and sd.expire_date >= '$date') or
-                    (p.expired_available <> 1))
                 ) as sold_quantity,
                         
                 (select ifnull(sum(srd.SaleReturnDetails_ReturnQuantity), 0)
@@ -554,8 +527,6 @@ class Products extends CI_Controller {
                     where srd.SaleReturnDetailsProduct_SlNo = p.Product_SlNo
                     and srd.SaleReturnDetails_brunchID = '$branchId'
                     " . (isset($data->date) && $data->date != null ? " and sr.SaleReturn_ReturnDate <= '$data->date'" : "") . "
-                    and (( p.expired_available = 1 and srd.SaleReturnDetails_ProductExp_date >= '$date') or
-                    (p.expired_available <> 1))
                 ) as sales_returned_quantity,
                         
                 (select ifnull(sum(dmd.DamageDetails_DamageQuantity), 0) 
@@ -565,8 +536,6 @@ class Products extends CI_Controller {
                     and dmd.status = 'a'
                     and dm.Damage_brunchid = '$branchId'
                     " . (isset($data->date) && $data->date != null ? " and dm.Damage_Date <= '$data->date'" : "") . "
-                    and (( p.expired_available = 1 and dmd.damage_productExpire >= '$date') or
-                    (p.expired_available <> 1))
                 ) as damaged_quantity,
             
                 (select ifnull(sum(trd.quantity), 0)

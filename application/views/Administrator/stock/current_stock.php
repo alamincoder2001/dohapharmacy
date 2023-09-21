@@ -72,12 +72,6 @@
 					<v-select v-bind:options="brands" v-model="selectedBrand" label="brand_name"></v-select>
 				</div>
 			</div>
-
-			<div class="form-group" v-bind:style="{display: selectedSearchType.value=='expire' ? 'none': '' }" style="margin-top:10px;" v-if="selectedSearchType.value != 'current'">
-				<div class="input-margin col-sm-2">
-					<input type="date" class="form-control" v-model="date">
-				</div>
-			</div>
 	
 			<div class="form-group">
 				<div class="button-padding cinput-margin ol-sm-2" >
@@ -172,59 +166,6 @@
 						</tr>
 					</tfoot>
 				</table>
-
-				
-				<table class="table table-bordered" 
-						v-if="searchType == 'expire' && searchType != null" 
-						style="display:none;" 
-						v-bind:style="{display: searchType == 'expire' && searchType != null ? '' : 'none'}">
-					<thead>
-						<tr>
-							<th>Sl</th>
-							<th>Product Id</th>
-							<th>Product Name</th>
-							<th>Category</th>
-							<th>Purchased Quantity</th>
-							<th>Purchase Returned Quantity</th>
-							<th>Damaged Quantity</th>
-							<th>Sold Quantity</th>
-							<th>Sales Returned Quantity</th>
-							<!-- <th>Transferred In Quantity</th>
-							<th>Transferred Out Quantity</th> -->
-							<th>Current Quantity</th>
-							<th>Expire Date</th>
-							<th>Rate</th>
-							<th>Stock Value</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr v-for="(product,index) in stock" :style="{background: product.Purchase_ExpireDate < date ? '#ff7777': ''}">
-							<td>{{ index+1 }}</td>
-							<td>{{ product.Product_Code }}</td>
-							<td>
-								<a title="Click To Edit" target="_blank" :href="'<?php echo base_url().'purchase/'?>' + product.PurchaseMaster_SlNo">{{ product.Product_Name }}</a>
-							</td>
-							<td>{{ product.ProductCategory_Name }}</td>
-							<td>{{ product.purchased_quantity }}</td>
-							<td>{{ product.purchase_returned_quantity }}</td>
-							<td>{{ product.damaged_quantity }}</td>
-							<td>{{ product.sold_quantity }}</td>
-							<td>{{ product.sales_returned_quantity }}</td>
-							<!-- <td>{{ product.transferred_to_quantity}}</td>
-							<td>{{ product.transferred_from_quantity}}</td> -->
-							<td>{{ product.quantity_text }}</td>
-							<td>{{ product.Purchase_ExpireDate }}</td>
-							<td>{{ product.Product_Purchase_Rate | decimal }}</td>
-							<td>{{ product.stock_value | decimal }}</td>
-						</tr>
-					</tbody>
-					<tfoot>
-						<tr>
-							<th colspan="9" style="text-align:right;">Total Stock Value</th>
-							<th>{{ totalStockValue | decimal }}</th>
-						</tr>
-					</tfoot>
-				</table>
 			</div>
 		</div>
 	</div>
@@ -247,7 +188,6 @@
 					{text: 'Total Stock', value: 'total'},
 					{text: 'Category Wise Stock', value: 'category'},
 					{text: 'Product Wise Stock', value: 'product'},
-					{text: 'Expire Wise Stock', value: 'expire'}
 					//{text: 'Brand Wise Stock', value: 'brand'}
 				],
 				selectedSearchType: {
@@ -296,8 +236,6 @@
 
 				if(this.searchType == 'current'){
 					url = '/get_current_stock';
-				} else if(this.searchType == 'expire'){
-					url = '/get_expire_stock';
 				} else {
 					url = '/get_total_stock';
 					parameters.date = this.date;
@@ -333,13 +271,7 @@
 				axios.post(url, parameters).then(res => {
 					if(this.searchType == 'current'){
 						this.stock = res.data.stock.filter((pro)=> pro.current_quantity != 0);
-					} else if(this.searchType == 'expire') {
-						this.stock = res.data.stock.filter(item => {
-							if(item.current_quantity > 0 && item.Purchase_ExpireDate < this.date) {
-								return item;
-							}
-						})
-					} else{
+					}else{
 						this.stock = res.data.stock;
 					}
 					this.totalStockValue = res.data.totalValue;

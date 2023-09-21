@@ -7,6 +7,10 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
+
+	// 'username' => 'dewbxcak_admin3',
+	// 'password' => ')&@)nVVDO$]_',
+	// 'database' => 'dewbxcak_doha-pharmacy',
 	
   	'username' => 'root',
   	'password' => '',

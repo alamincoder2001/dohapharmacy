@@ -146,7 +146,6 @@ class Purchase extends CI_Controller
                     'PurchaseReturnDetailsProduct_SlNo' => $product->Product_IDNo,
                     'PurchaseReturnDetails_ReturnQuantity' => $product->return_quantity,
                     'PurchaseReturnDetails_ReturnAmount' => $product->return_amount,
-                    'PurchaseReturnDetails_ProductExp_date' => $product->expire_date,
                     'Status' => 'a',
                     'AddBy' => $this->session->userdata("FullName"),
                     'AddTime' => date('Y-m-d H:i:s'),
@@ -235,7 +234,6 @@ class Purchase extends CI_Controller
                     'PurchaseReturnDetailsProduct_SlNo' => $product->Product_IDNo,
                     'PurchaseReturnDetails_ReturnQuantity' => $product->return_quantity,
                     'PurchaseReturnDetails_ReturnAmount' => $product->return_amount,
-                    'PurchaseReturnDetails_ProductExp_date' => $product->expire_date,
                     'Status' => 'a',
                     'UpdateBy' => $this->session->userdata("FullName"),
                     'UpdateTime' => date('Y-m-d H:i:s'),
@@ -533,19 +531,12 @@ class Purchase extends CI_Controller
             $purchaseId = $this->db->insert_id();
 
             foreach($data->cartProducts as $product){
-                $expireDate = $product->expireDate;
-                if($expireDate != null && $expireDate != "") {
-                    $expireDate = $product->expireDate;
-                } else {
-                    $expireDate = null;
-                }
                 $purchaseDetails = array(
                     'PurchaseMaster_IDNo' => $purchaseId,
                     'Product_IDNo' => $product->productId,
                     'PurchaseDetails_TotalQuantity' => $product->quantity,
                     'PurchaseDetails_Rate' => $product->purchaseRate,
                     'PurchaseDetails_TotalAmount' => $product->total,
-                    'expire_date' => $expireDate,
                     'Status' => 'a',
                     'AddBy' => $this->session->userdata("FullName"),
                     'AddTime' => date('Y-m-d H:i:s'),
@@ -578,15 +569,13 @@ class Purchase extends CI_Controller
                 $this->db->query("
                     update tbl_product set 
                     Product_Purchase_Rate = (((Product_Purchase_Rate * ?) + ?) / ?), 
-                    Product_SellingPrice = ?,
-                    expire_date = ?
+                    Product_SellingPrice = ?
                     where Product_SlNo = ?
                 ", [
                     $previousStock,
                     $product->total,
                     ($previousStock + $product->quantity),
-                    $product->salesRate, 
-                    $product->expireDate,
+                    $product->salesRate,
                     $product->productId
                 ]);
             }
@@ -685,19 +674,12 @@ class Purchase extends CI_Controller
             }
 
             foreach($data->cartProducts as $product){
-                $expireDate = $product->expireDate;
-                if($expireDate != null && $expireDate != "") {
-                    $expireDate = $product->expireDate;
-                } else {
-                    $expireDate = null;
-                }
                 $purchaseDetails = array(
                     'PurchaseMaster_IDNo' => $purchaseId,
                     'Product_IDNo' => $product->productId,
                     'PurchaseDetails_TotalQuantity' => $product->quantity,
                     'PurchaseDetails_Rate' => $product->purchaseRate,
                     'PurchaseDetails_TotalAmount' => $product->total,
-                    'expire_date' => $expireDate,
                     'Status' => 'a',
                     'UpdateBy' => $this->session->userdata("FullName"),
                     'UpdateTime' => date('Y-m-d H:i:s'),
@@ -729,15 +711,13 @@ class Purchase extends CI_Controller
                 $this->db->query("
                     update tbl_product set 
                     Product_Purchase_Rate = (((Product_Purchase_Rate * ?) + ?) / ?), 
-                    Product_SellingPrice = ?,
-                    expire_date = ?
+                    Product_SellingPrice = ?
                     where Product_SlNo = ?
                 ", [
                     $previousStock,
                     $product->total,
                     ($previousStock + $product->quantity),
-                    $product->salesRate, 
-                    $product->expireDate, 
+                    $product->salesRate,
                     $product->productId
                 ]);
             }
