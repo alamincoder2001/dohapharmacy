@@ -5,6 +5,7 @@
 		margin-top: 1px;
 		margin-bottom: 5px;
 	}
+
 	#products {
 		border-radius: 0;
 	}
@@ -71,6 +72,7 @@
 	.widget-body {
 		background: #d5d2d2;
 	}
+
 	input[type=text],
 	input[type=number],
 	input[type=date],
@@ -129,7 +131,7 @@
 			<div class="widget-main">
 				<div class="widget-body">
 					<div class="row">
-					<div class="col-xs-12 col-md-12">
+						<div class="col-xs-12 col-md-12">
 							<div class="form-group row">
 								<label class="col-xs-4 col-md-3 control-label no-padding-right"> Last Invoice </label>
 								<div class="col-xs-8 col-md-9">
@@ -230,8 +232,9 @@
 											<th style="width:5%;color:#000;">Sl</th>
 											<th style="width:20%;color:#000;">Product Name</th>
 											<th style="width:15%;color:#000;">Category</th>
+											<th style="width:11%;color:#000;">SaleRate</th>
 											<th style="width:17%;color:#000;">Quantity</th>
-											<th style="width:11%;color:#000;">Rate</th>
+											<th style="width:11%;color:#000;">PurchaseRate</th>
 											<th style="width:12%;color:#000;">Total Amount</th>
 											<th style="width:8%;color:#000;">Action</th>
 										</tr>
@@ -241,10 +244,23 @@
 											<td>{{ sl + 1 }}</td>
 											<td>{{ product.name }}</td>
 											<td>{{ product.categoryName }}</td>
-											<td>{{ product.quantity_text }}</td>
-											<td>{{ product.purchaseRate }}</td>
+											<td>
+												<input v-if="cartSl != '' && parseFloat(cartSl) === parseFloat(sl)+1" type="number" step="0.01" min="0" v-model="product.salesRate" class="form-control" style="width: 80px;margin:0;" />
+												<span v-else>{{ product.salesRate  }}</span>
+											</td>
+											<td>
+												<input v-if="cartSl != '' && parseFloat(cartSl) === parseFloat(sl)+1" @input="changeCartQtyAmount()" type="number" step="0.01" min="0" v-model="product.quantity" class="form-control" style="width: 75px;margin:0;" />
+												<span v-else>{{ product.quantity_text }}</span>
+											</td>
+											<td>
+												<input v-if="cartSl != '' && parseFloat(cartSl) === parseFloat(sl)+1" @input="changeCartQtyAmount()" type="number" step="0.01" min="0" v-model="product.purchaseRate" class="form-control" style="width: 90px;margin:0;" />
+												<span v-else>{{ product.purchaseRate }}</span>
+											</td>
 											<td>{{ product.total }}</td>
-											<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
+											<td>
+												<a href="" v-on:click.prevent="editCart(sl)"><i class="fa fa-edit"></i></a>
+												<a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a>
+											</td>
 										</tr>
 									</tbody>
 								</table>
@@ -468,6 +484,8 @@
 				cart: [],
 				purchaseOnProgress: false,
 				userType: '<?php echo $this->session->userdata("accountType") ?>',
+				cartSl: '',
+				statusSl: false,
 			}
 		},
 		async created() {
@@ -578,7 +596,7 @@
 			},
 			addToCart() {
 				if (this.selectedProduct.Product_SlNo == '') {
-					alert('Product name is empty');
+					document.querySelector("#products [type='search']").focus();
 					return;
 				}
 				// if (this.selectedProduct.expired_available == 1 && this.selectedProduct.expire_date == null) {
@@ -616,9 +634,7 @@
 					purchaseRate: this.selectedProduct.Product_Purchase_Rate,
 					salesRate: this.selectedProduct.Product_SellingPrice,
 					quantity: this.selectedProduct.quantity,
-					// total: this.selectedProduct.total,
 					total: this.selectedProduct.quantity * this.selectedProduct.Product_Purchase_Rate,
-					// expireDate: this.selectedProduct.expire_date,
 					quantity_text: `${Math.floor(this.selectedProduct.quantity / this.selectedProduct.per_unit)} ${this.selectedProduct.convert_text} ${this.selectedProduct.quantity % this.selectedProduct.per_unit} ${this.selectedProduct.Unit_Name}`
 				}
 
@@ -626,6 +642,22 @@
 				this.clearSelectedProduct();
 				this.calculateTotal();
 				document.querySelector("#products [type='search']").focus();
+			},
+			editCart(sl) {
+				if (parseFloat(sl) + 1 === parseFloat(this.cartSl) && this.statusSl == true) {
+					this.cartSl = '';
+					this.statusSl = false;
+					return
+				}
+				this.statusSl = true;
+				this.cartSl = sl + 1;
+			},
+			changeCartQtyAmount() {
+				this.cart = this.cart.map(item => {
+					item.total = (parseFloat(item.purchaseRate) * item.quantity).toFixed(2)
+					return item;
+				})
+				this.calculateTotal();
 			},
 			async removeFromCart(ind) {
 				if (this.cart[ind].id) {

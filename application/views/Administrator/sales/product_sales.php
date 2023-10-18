@@ -226,7 +226,7 @@
 					<div class="row">
 						<div class="col-xs-12 col-md-12">
 							<div class="table-responsive">
-								<table class="table table-bordered" style="color:#000;margin-bottom: 5px;">
+								<table class="table table-bordered carttable" style="color:#000;margin-bottom: 5px;">
 									<thead>
 										<tr style="background: #d5d2d2;">
 											<th style="width:5%;color:#000;">Sl</th>
@@ -240,15 +240,24 @@
 										</tr>
 									</thead>
 									<tbody style="display:none;background:#fff;" v-bind:style="{display: cart.length > 0 ? '' : 'none'}">
-										<tr v-for="(product, sl) in cart" style="background: #6fffff;">
+										<tr v-for="(product, sl) in cart" style="background: #6fffff;" :key="sl">
 											<td>{{ sl + 1 }}</td>
 											<td>{{ product.productCode }}</td>
 											<td>{{ product.name }}</td>
 											<td>{{ product.categoryName }}</td>
-											<td>{{ product.quantity }}</td>
-											<td>{{ product.salesRate }}</td>
+											<td style="text-align:center;">
+												<input v-if="cartSl != '' && parseFloat(cartSl) === parseFloat(sl)+1" @input="changeCartQtyAmount(event, product.productId, product.quantity)" type="number" step="0.01" min="0" v-model="product.quantity" class="form-control" style="width: 75px;margin:0;" />
+												<span v-else>{{ product.quantity }}</span>
+											</td>
+											<td style="text-align:center;">
+												<input v-if="cartSl != '' && parseFloat(cartSl) === parseFloat(sl)+1" @input="changeCartQtyAmount(event, product.productId, product.quantity)" type="number" step="0.01" min="0" v-model="product.salesRate" class="form-control" style="width: 90px;margin:0;" />
+												<span v-else>{{ product.salesRate }}</span>
+											</td>
 											<td>{{ product.total }}</td>
-											<td><a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a></td>
+											<td>
+												<a href="" v-on:click.prevent="editCart(sl)"><i class="fa fa-edit"></i></a>
+												<a href="" v-on:click.prevent="removeFromCart(sl)"><i class="fa fa-trash"></i></a>
+											</td>
 										</tr>
 									</tbody>
 								</table>
@@ -517,6 +526,8 @@
 				accounts: [],
 				selectedAccount: null,
 				selectedResultIndex: 0,
+				cartSl: '',
+				statusSl: false,
 			}
 		},
 		watch: {
@@ -756,16 +767,48 @@
 					this.cart.splice(cartInd, 1);
 				}
 
-				this.cart.unshift(product);
+				this.cart.push(product);
 				this.clearProduct();
 				this.calculateTotal();
 				document.querySelector("#productCode").focus();
 
 				this.products = [];
 			},
-			removeFromCart(ind) {
-				this.cart.splice(ind, 1);
+			editCart(sl) {
+				if (parseFloat(sl) + 1 === parseFloat(this.cartSl) && this.statusSl == true) {
+					this.cartSl = '';
+					this.statusSl = false;
+					return
+				}
+				this.statusSl = true;
+				this.cartSl = sl + 1;
+			},
+			async changeCartQtyAmount(event, id, quantity){
+				let sl = this.cart.findIndex(pro => pro.productId == id);
+				let cartQty = this.cart[sl].quantity;
+				if (parseFloat(cartQty) == 0) {
+					this.cart[sl].quantity = 1;
+				}
+				let stock = await axios.post('/get_product_stock', {
+						productId: id
+					}).then(res => {
+						return res.data[0].current_quantity;
+					})
+				if (parseFloat(stock) < parseFloat(quantity)) {
+					alert("Stock unavailable");
+					this.cart[sl].quantity = parseFloat(stock)
+				}
+				this.cart = this.cart.map(item => {
+					item.total = (parseFloat(item.salesRate)*item.quantity).toFixed(2)
+					return item;
+				})
 				this.calculateTotal();
+			},
+			removeFromCart(ind) {
+				if (confirm("Are you sure!")) {
+					this.cart.splice(ind, 1);
+					this.calculateTotal();
+				}
 			},
 			clearProduct() {
 				this.selectedProduct = {
