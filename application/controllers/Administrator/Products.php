@@ -124,7 +124,7 @@ class Products extends CI_Controller {
 
             // $product['expired_available'] = $productObj->is_expire;
             // unset($product['is_expire']);
-            // $product['is_service'] = $productObj->is_service == true ? 'true' : 'false';
+            $product['is_service'] = $productObj->is_service == true ? 'true' : 'false';
             $product['UpdateBy'] = $this->session->userdata("FullName");
             $product['UpdateTime'] = date('Y-m-d H:i:s');
 
