@@ -1,20 +1,23 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Products extends CI_Controller {
-    public function __construct() {
+class Products extends CI_Controller
+{
+    public function __construct()
+    {
         parent::__construct();
         $this->brunch = $this->session->userdata('BRANCHid');
         $access = $this->session->userdata('userId');
-         if($access == '' ){
+        if ($access == '') {
             redirect("Login");
         }
         $this->load->model("Model_myclass", "mmc", TRUE);
-        $this->load->model('Model_table', "mt", TRUE); 
-		$this->load->model('Billing_model');
+        $this->load->model('Model_table', "mt", TRUE);
+        $this->load->model('Billing_model');
     }
-    public function index()  {
+    public function index()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
         $data['title'] = "Product";
@@ -23,43 +26,45 @@ class Products extends CI_Controller {
         $this->load->view('Administrator/index', $data);
     }
 
-    public function fanceybox_unit()  {
+    public function fanceybox_unit()
+    {
         $this->load->view('Administrator/products/fanceybox_unit');
     }
-    public function insert_unit()  {
+    public function insert_unit()
+    {
         $mail = $this->input->post('add_unit');
         $query = $this->db->query("SELECT Unit_Name from tbl_unit where Unit_Name = '$mail'");
-        
-        if($query->num_rows() > 0){
+
+        if ($query->num_rows() > 0) {
             $data['exists'] = "This Name is Already Exists";
-            $this->load->view('Administrator/ajax/fanceybox_product_unit',$data);
-        }
-        else{
+            $this->load->view('Administrator/ajax/fanceybox_product_unit', $data);
+        } else {
             $data = array(
-                "Unit_Name"          =>$this->input->post('add_unit', TRUE),
-                "AddBy"                  =>$this->session->userdata("FullName"),
-                "AddTime"                =>date("Y-m-d H:i:s")
-                );
-            $this->mt->save_data('tbl_unit',$data);
+                "Unit_Name"          => $this->input->post('add_unit', TRUE),
+                "AddBy"                  => $this->session->userdata("FullName"),
+                "AddTime"                => date("Y-m-d H:i:s")
+            );
+            $this->mt->save_data('tbl_unit', $data);
             $this->load->view('Administrator/ajax/fanceybox_product_unit');
         }
     }
-    
-    public function addProduct() {
-        $res = ['success'=>false, 'message'=>''];
-        try{
+
+    public function addProduct()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
             $productObj = json_decode($this->input->raw_input_stream);
 
             $productNameCount = $this->db->query("select * from tbl_product where Product_Name = ?", $productObj->Product_Name)->num_rows();
-            if($productNameCount > 0){
-                $res = ['success'=>false, 'message'=>'Product name already exists'];
+            if ($productNameCount > 0) {
+                $res = ['success' => false, 'message' => 'Product name already exists'];
                 echo json_encode($res);
                 exit;
             }
 
             $productCodeCount = $this->db->query("select * from tbl_product where Product_Code = ?", $productObj->Product_Code)->num_rows();
-            if($productCodeCount > 0){
-                $res = ['success'=>false, 'message'=>'Product code already exists'];
+            if ($productCodeCount > 0) {
+                $res = ['success' => false, 'message' => 'Product code already exists'];
                 echo json_encode($res);
                 exit;
             }
@@ -74,47 +79,49 @@ class Products extends CI_Controller {
             $product['Product_branchid'] = $this->brunch;
 
             $this->db->insert('tbl_product', $product);
-            
-            $res = ['success'=>true, 'message'=>'Product added successfully', 'productId'=>$this->mt->generateProductCode()];
-        } catch (Exception $ex){
-            $res = ['success'=>false, 'message'=>$ex->getMessage()];
+
+            $res = ['success' => true, 'message' => 'Product added successfully', 'productId' => $this->mt->generateProductCode()];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
         }
 
         echo json_encode($res);
-    }    
-    public function chk_product_code()  {
-        $Pid=$this->input->post('Pid');
-        $data['duplicate']=array();
+    }
+    public function chk_product_code()
+    {
+        $Pid = $this->input->post('Pid');
+        $data['duplicate'] = array();
 
-        $query=$this->db->query("SELECT * FROM tbl_product WHERE Product_Code='$Pid'");
-        if ($query->num_rows() > 0){
-            $data['duplicate']='yes';
+        $query = $this->db->query("SELECT * FROM tbl_product WHERE Product_Code='$Pid'");
+        if ($query->num_rows() > 0) {
+            $data['duplicate'] = 'yes';
         }
         $this->load->view('Administrator/ajax/product', $data['duplicate']);
-        
     }
-    public function product_edit()  {
-		$data['title'] = "Update Product";
+    public function product_edit()
+    {
+        $data['title'] = "Update Product";
         $id = $this->input->post('edit');
-		$data['allproduct'] =  $this->Billing_model->select_all_Product();
+        $data['allproduct'] =  $this->Billing_model->select_all_Product();
         $data['selected'] = $this->Billing_model->get_product_by_id($id);
         $this->load->view('Administrator/edit/product', $data);
     }
-    public function updateProduct(){
-        $res = ['success'=>false, 'message'=>''];
-        try{
+    public function updateProduct()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
             $productObj = json_decode($this->input->raw_input_stream);
 
             $productNameCount = $this->db->query("select * from tbl_product where Product_Name = ? and Product_SlNo != ?", [$productObj->Product_Name, $productObj->Product_SlNo])->num_rows();
-            if($productNameCount > 0){
-                $res = ['success'=>false, 'message'=>'Product name already exists'];
+            if ($productNameCount > 0) {
+                $res = ['success' => false, 'message' => 'Product name already exists'];
                 echo json_encode($res);
                 exit;
             }
 
             $productCodeCount = $this->db->query("select * from tbl_product where Product_Code = ? and Product_SlNo != ?", [$productObj->Product_Code, $productObj->Product_SlNo])->num_rows();
-            if($productCodeCount > 0){
-                $res = ['success'=>false, 'message'=>'Product code already exists'];
+            if ($productCodeCount > 0) {
+                $res = ['success' => false, 'message' => 'Product code already exists'];
                 echo json_encode($res);
                 exit;
             }
@@ -130,55 +137,58 @@ class Products extends CI_Controller {
 
             $this->db->where('Product_SlNo', $productObj->Product_SlNo)->update('tbl_product', $product);
 
-            $res = ['success'=>true, 'message'=>'Product updated successfully', 'productId'=>$this->mt->generateProductCode()];
+            $res = ['success' => true, 'message' => 'Product updated successfully', 'productId' => $this->mt->generateProductCode()];
             // $res = $product;
         } catch (Exception $ex) {
-            $res = ['success'=>false, 'message'=>$ex->getMessage()];
+            $res = ['success' => false, 'message' => $ex->getMessage()];
         }
 
         echo json_encode($res);
-    } 
-    public function deleteProduct(){
-        $res = ['success'=>false, 'message'=>''];
-        try{
+    }
+    public function deleteProduct()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
             $data = json_decode($this->input->raw_input_stream);
 
             $this->db->set(['status' => 'd'])->where('Product_SlNo', $data->productId)->update('tbl_product');
 
-            $res = ['success'=>true, 'message'=>'Product deleted successfully'];
-        } catch (Exception $ex){
-            $res = ['success'=>false, 'message'=>$ex->getMessage()];
+            $res = ['success' => true, 'message' => 'Product deleted successfully'];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
         }
 
-        echo json_encode($res);
-    } 
-
-    public function activeProduct(){
-        $res = ['success'=>false, 'message'=>''];
-        try{
-            $productId = $this->input->post('productId');
-            $this->db->query("update tbl_product set status = 'a' where Product_SlNo = ?", $productId);
-            $res = ['success'=>true, 'message'=>'Product activated'];
-        } catch (Exception $ex){
-            $res = ['success'=>false, 'message'=>$ex->getMessage()];
-        }
-        
         echo json_encode($res);
     }
 
-    public function getProducts(){
+    public function activeProduct()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $productId = $this->input->post('productId');
+            $this->db->query("update tbl_product set status = 'a' where Product_SlNo = ?", $productId);
+            $res = ['success' => true, 'message' => 'Product activated'];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+    public function getProducts()
+    {
         $data = json_decode($this->input->raw_input_stream);
 
         $clauses = "";
-        if(isset($data->categoryId) && $data->categoryId != ''){
+        if (isset($data->categoryId) && $data->categoryId != '') {
             $clauses .= " and p.ProductCategory_ID = '$data->categoryId'";
         }
 
-        if(isset($data->idFrom) && $data->idFrom != '' && isset($data->idTo) && $data->idTo != ''){
+        if (isset($data->idFrom) && $data->idFrom != '' && isset($data->idTo) && $data->idTo != '') {
             $clauses .= " and p.Product_SlNo between '$data->idFrom' and '$data->idTo'";
         }
 
-        if(isset($data->isService) && $data->isService != null && $data->isService != ''){
+        if (isset($data->isService) && $data->isService != null && $data->isService != '') {
             $clauses .= " and p.is_service = '$data->isService'";
         }
 
@@ -203,19 +213,20 @@ class Products extends CI_Controller {
         echo json_encode($products);
     }
 
-    public function getProductStock(){
-       
+    public function getProductStock()
+    {
+
         $data = json_decode($this->input->raw_input_stream);
 
         $date = date('Y-m-d');
         $branchId = $this->session->userdata('BRANCHid');
-        
+
         // if(isset($data->expiredDate) && $data->expiredDate != '' && $data->expiredDate != null) {
         //     $expireDate = $data->expiredDate;
         // }
         $clauses = "";
         $stock = 0;
-        if(isset($data->productId) && $data->productId != null){
+        if (isset($data->productId) && $data->productId != null) {
             $clauses .= " and p.Product_SlNo = '$data->productId'";
             $stock = $this->db->query("
                 select
@@ -279,18 +290,20 @@ class Products extends CI_Controller {
         echo json_encode($stock);
     }
 
-    public function getAvailableExpDate() {
+    public function getAvailableExpDate()
+    {
         $inputs = json_decode($this->input->raw_input_stream);
         $branchId = $this->session->userdata("BRANCHid");
 
         $productId = $inputs->productId;
         $clauses = "";
-        if(isset($inputs->expired_available) && $inputs->expired_available != 0 && $inputs->expired_available != "" && $inputs->expired_available != null) {
+        if (isset($inputs->expired_available) && $inputs->expired_available != 0 && $inputs->expired_available != "" && $inputs->expired_available != null) {
             $clauses .= " and pd.expire_date >= '" . date('Y-m-d') . "' ";
         }
         $expireDate = 0;
 
-        $purchaseQty = $this->db->query("
+        $purchaseQty = $this->db->query(
+            "
             select
              p.Product_Name, 
              p.Product_SlNo as product_number, 
@@ -331,18 +344,20 @@ class Products extends CI_Controller {
              from tbl_purchasedetails pd join tbl_product p on p.Product_SlNo = pd.Product_IDNo 
              where p.Product_SlNo = ? and pd.PurchaseDetails_branchID = ?
              $clauses
-             group by pd.expire_date"
-        , [$productId, $this->session->userdata("BRANCHid")])->result();
+             group by pd.expire_date",
+            [$productId, $this->session->userdata("BRANCHid")]
+        )->result();
 
         echo json_encode($purchaseQty);
     }
 
-    public function getCurrentStock(){
+    public function getCurrentStock()
+    {
         $data = json_decode($this->input->raw_input_stream);
         $date = date('Y-m-d');
 
         $clauses = "";
-        if(isset($data->stockType) && $data->stockType == 'low') {
+        if (isset($data->stockType) && $data->stockType == 'low') {
             $clauses .= " and current_quantity <= Product_ReOrederLevel";
         }
         // $stock = $this->mt->currentStock($clauses);
@@ -397,16 +412,17 @@ class Products extends CI_Controller {
             order by p.Product_Name asc
         ", [$this->session->userdata("BRANCHid")])->result();
 
-        $stock = array_map(function($product) {
-            $product->quantity_text = $product->per_unit == 0 ? $product->current_quantity .' '. $product->Unit_Name : floor($product->current_quantity / $product->per_unit) . ' ' . $product->convert_text . ' '. $product->current_quantity % $product->per_unit . ' ' . $product->Unit_Name;
+        $stock = array_map(function ($product) {
+            $product->quantity_text = $product->per_unit == 0 ? $product->current_quantity . ' ' . $product->Unit_Name : floor($product->current_quantity / $product->per_unit) . ' ' . $product->convert_text . ' ' . $product->current_quantity % $product->per_unit . ' ' . $product->Unit_Name;
             return $product;
         }, $stock);
-        
+
         $res['stock'] = $stock;
         $res['totalValue'] = array_sum(
-            array_map(function($product){
+            array_map(function ($product) {
                 return $product->stock_value;
-            }, $stock));
+            }, $stock)
+        );
 
         echo json_encode($res);
     }
@@ -428,10 +444,11 @@ class Products extends CI_Controller {
     //     echo json_encode($expList);
     // }
 
-    public function getPurchaseExpireList() {
+    public function getPurchaseExpireList()
+    {
         $date = date('Y-m-d');
         $nextDate = date('Y-m-d', strtotime("+30 days"));
-        
+
         $expList = $this->db->query("
             select pm.PurchaseMaster_InvoiceNo, p.Product_Code, p.Product_Name, pc.ProductCategory_Name,
              pd.AddTime, pd.expire_date, 
@@ -446,16 +463,17 @@ class Products extends CI_Controller {
                 group by pd.expire_date, pd.Product_IDNo
                 order by p.expire_date asc
         ", $this->session->userdata('BRANCHid'))->result();
-    
+
         echo json_encode($expList);
     }
 
-    public function getTopSold(){
+    public function getTopSold()
+    {
 
         $data = json_decode($this->input->raw_input_stream);
 
         $clauses = "";
-        if(isset($data->soldType) && $data->soldType != ''){
+        if (isset($data->soldType) && $data->soldType != '') {
             $clauses .= "$data->soldType";
         }
 
@@ -472,20 +490,21 @@ class Products extends CI_Controller {
         echo json_encode($products);
     }
 
-    public function getTotalStock(){
+    public function getTotalStock()
+    {
         $data = json_decode($this->input->raw_input_stream);
         $date = date('Y-m-d');
         $branchId = $this->session->userdata('BRANCHid');
         $clauses = "";
-        if(isset($data->categoryId) && $data->categoryId != null){
+        if (isset($data->categoryId) && $data->categoryId != null) {
             $clauses .= " and p.ProductCategory_ID = '$data->categoryId'";
         }
 
-        if(isset($data->productId) && $data->productId != null){
+        if (isset($data->productId) && $data->productId != null) {
             $clauses .= " and p.Product_SlNo = '$data->productId'";
         }
 
-        if(isset($data->brandId) && $data->brandId != null){
+        if (isset($data->brandId) && $data->brandId != null) {
             $clauses .= " and p.brand = '$data->brandId'";
         }
 
@@ -565,29 +584,31 @@ class Products extends CI_Controller {
             order by p.Product_Name asc
         ")->result();
 
-        $stock = array_map(function($product) {
-            $product->quantity_text = $product->per_unit == 0 ? $product->current_quantity .' '. $product->Unit_Name : floor($product->current_quantity / $product->per_unit) . ' ' . $product->convert_text . ' '. $product->current_quantity % $product->per_unit . ' ' . $product->Unit_Name;
+        $stock = array_map(function ($product) {
+            $product->quantity_text = $product->per_unit == 0 ? $product->current_quantity . ' ' . $product->Unit_Name : floor($product->current_quantity / $product->per_unit) . ' ' . $product->convert_text . ' ' . $product->current_quantity % $product->per_unit . ' ' . $product->Unit_Name;
             return $product;
         }, $stock);
 
         $res['stock'] = $stock;
 
         $res['totalValue'] = array_sum(
-            array_map(function($product){
+            array_map(function ($product) {
                 return $product->stock_value;
-            }, $stock));
+            }, $stock)
+        );
 
         echo json_encode($res);
     }
 
-    public function getExpireStock() {
+    public function getExpireStock()
+    {
 
         $data = json_decode($this->input->raw_input_stream);
 
         $branchId = $this->session->userdata('BRANCHid');
 
         $clauses = "";
-        if(isset($data->productId) && $data->productId != null){
+        if (isset($data->productId) && $data->productId != null) {
             $clauses .= " and p.Product_SlNo = '$data->productId'";
         }
 
@@ -642,47 +663,50 @@ class Products extends CI_Controller {
                 
             ", $branchId)->result();
 
-            $stock = array_map(function($product) {
-                $product->quantity_text = $product->per_unit == 0 ? $product->current_quantity .' '. $product->Unit_Name : floor($product->current_quantity / $product->per_unit) . ' ' . $product->convert_text . ' '. $product->current_quantity % $product->per_unit . ' ' . $product->Unit_Name;
-                return $product;
-            }, $stock);
-    
-            $res['stock'] = $stock;
-    
-            $res['totalValue'] = array_sum(
-                array_map(function($product){
-                    return $product->stock_value;
-                }, $stock));
-    
-            echo json_encode($res);
+        $stock = array_map(function ($product) {
+            $product->quantity_text = $product->per_unit == 0 ? $product->current_quantity . ' ' . $product->Unit_Name : floor($product->current_quantity / $product->per_unit) . ' ' . $product->convert_text . ' ' . $product->current_quantity % $product->per_unit . ' ' . $product->Unit_Name;
+            return $product;
+        }, $stock);
+
+        $res['stock'] = $stock;
+
+        $res['totalValue'] = array_sum(
+            array_map(function ($product) {
+                return $product->stock_value;
+            }, $stock)
+        );
+
+        echo json_encode($res);
     }
 
-    public function fanceybox_category()  {
+    public function fanceybox_category()
+    {
         $this->load->view('Administrator/products/fanceybox_category');
     }
-    public function insert_fanceybox_category()  {
+    public function insert_fanceybox_category()
+    {
         $mail = $this->input->post('add_Category');
         $query = $this->db->query("SELECT ProductCategory_Name from tbl_productcategory where ProductCategory_Name = '$mail'");
-        
-        if($query->num_rows() > 0){
+
+        if ($query->num_rows() > 0) {
             $data['exists'] = "This Name is Already Exists";
-            $this->load->view('Administrator/ajax/fanceybox_product_cat',$data);
-        }
-        else{
+            $this->load->view('Administrator/ajax/fanceybox_product_cat', $data);
+        } else {
             $data = array(
-                "ProductCategory_Name"                  =>$this->input->post('add_Category', TRUE),
-                "ProductCategory_Description"           =>$this->input->post('catdescrip', TRUE),
-                "AddBy"                                 =>$this->session->userdata("FullName"),
-                "AddTime"                               =>date("Y-m-d H:i:s")
-                );
-            $this->mt->save_data('tbl_productcategory',$data);
+                "ProductCategory_Name"                  => $this->input->post('add_Category', TRUE),
+                "ProductCategory_Description"           => $this->input->post('catdescrip', TRUE),
+                "AddBy"                                 => $this->session->userdata("FullName"),
+                "AddTime"                               => date("Y-m-d H:i:s")
+            );
+            $this->mt->save_data('tbl_productcategory', $data);
             $this->load->view('Administrator/ajax/fanceybox_product_cat');
         }
     }
-	
-    public function current_stock()  {
+
+    public function current_stock()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
         $data['title'] = "Current Stock";
@@ -690,43 +714,48 @@ class Products extends CI_Controller {
         $data['brands'] = $this->Other_model->branch_wise_brand();
         $data['products'] = $this->Product_model->products_by_brunch();
         $data['content'] = $this->load->view('Administrator/stock/current_stock', $data, TRUE);
-        $this->load->view('Administrator/index', $data); 
+        $this->load->view('Administrator/index', $data);
     }
-	
-    public function stockAvailable()  {
+
+    public function stockAvailable()
+    {
         $data['title'] = "Stock Available";
-		$branchID = $this->session->userdata("BRANCHid");
-        $sql ="SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' group by tbl_purchasedetails.Product_IDNo";
-        
-		$result = $this->db->query($sql);
-		$data['record'] = $result->result();
-		$data['branchID'] =  $this->session->userdata("BRANCHid");
+        $branchID = $this->session->userdata("BRANCHid");
+        $sql = "SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' group by tbl_purchasedetails.Product_IDNo";
+
+        $result = $this->db->query($sql);
+        $data['record'] = $result->result();
+        $data['branchID'] =  $this->session->userdata("BRANCHid");
         $data['content'] = $this->load->view('Administrator/stock/stock_available', $data, TRUE);
         $this->load->view('Administrator/index', $data);
     }
-	
-    public function total_stock()  {
+
+    public function total_stock()
+    {
         $data['title'] = "Total Stock";
         $data['content'] = $this->load->view('Administrator/stock/total_stock', $data, TRUE);
         $this->load->view('Administrator/index', $data);
     }
-	
-    function searchproduct(){
+
+    function searchproduct()
+    {
         $data['Searchkey'] = $this->input->post('Searchkey');
         $this->load->view('Administrator/ajax/search_product', $data);
     }
-	
-    public function branch_stock(){
+
+    public function branch_stock()
+    {
         $data['title'] = "Branch Stock";
         $data['content'] = $this->load->view('Administrator/stock/branch_stock', $data, TRUE);
         $this->load->view('Administrator/index', $data);
     }
 
-    public function branch_stock_search(){
+    public function branch_stock_search()
+    {
         $data['Branch_ID'] = $BranchID = $this->input->post('BranchID');
         $data['Branch_category'] = $category = $this->input->post('Categorys');
         $this->session->set_userdata($data);
-		if($category != 'All'){
+        if ($category != 'All') {
             $this->db->SELECT("
                 tbl_product.*, 
                 tbl_productcategory.*,
@@ -741,20 +770,19 @@ class Products extends CI_Controller {
                 where tbl_product.ProductCategory_ID = '$category' 
                 AND tbl_product.Product_branchid = '$BranchID'
             ");
-			$query = $this->db->get();
-			$result = $query->result();
-			$data['product'] = $result;
-			$data['show'] = 1;
-		}else{
-			$this->db->SELECT('*');
-			$this->db->from('tbl_productcategory');
-			$this->db->where('category_branchid',$BranchID);
-			$query = $this->db->get();
-			$category = $query->result();
-			
-			foreach($category as $vcategory)
-			{
-				$categoryid = $vcategory->ProductCategory_SlNo;
+            $query = $this->db->get();
+            $result = $query->result();
+            $data['product'] = $result;
+            $data['show'] = 1;
+        } else {
+            $this->db->SELECT('*');
+            $this->db->from('tbl_productcategory');
+            $this->db->where('category_branchid', $BranchID);
+            $query = $this->db->get();
+            $category = $query->result();
+
+            foreach ($category as $vcategory) {
+                $categoryid = $vcategory->ProductCategory_SlNo;
                 $this->db->SELECT("
                         tbl_product.*, 
                         tbl_productcategory.*,
@@ -769,70 +797,72 @@ class Products extends CI_Controller {
                     where tbl_product.ProductCategory_ID = '$categoryid' 
                     AND tbl_product.Product_branchid = '$BranchID'
                 ");
-				$query = $this->db->get();
-				$productCat[] = $query->result();
-				//$data['productCat'] = $query->result();
-			}
-			
-			$data['category'] = $category;
-			$data['productCat'] = @$productCat;
-			$data['show'] = 0;
-		}
+                $query = $this->db->get();
+                $productCat[] = $query->result();
+                //$data['productCat'] = $query->result();
+            }
+
+            $data['category'] = $category;
+            $data['productCat'] = @$productCat;
+            $data['show'] = 0;
+        }
         $this->load->view('Administrator/stock/branch_stock_search', $data);
     }
 
-	public function search_stock(){
-		$Store=$data['Store'] = $this->input->post('Store');
-		$Category= $data['Category'] = $this->input->post('Category');
-		$Product =  $data['Product'] = $this->input->post('Product');
-		$Supplier=  $data['Supplier']  = $this->input->post('Supplier');
-		$brand=  $data['brand']  = $this->input->post('brand');
-		$branchID= $data['branchID'] = $this->session->userdata("BRANCHid");
-//		 echo $brand; die();
+    public function search_stock()
+    {
+        $Store = $data['Store'] = $this->input->post('Store');
+        $Category = $data['Category'] = $this->input->post('Category');
+        $Product =  $data['Product'] = $this->input->post('Product');
+        $Supplier =  $data['Supplier']  = $this->input->post('Supplier');
+        $brand =  $data['brand']  = $this->input->post('brand');
+        $branchID = $data['branchID'] = $this->session->userdata("BRANCHid");
+        //		 echo $brand; die();
 
-		if($Store == 'Total' || $Store == 'Current'):
-			$data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
+        if ($Store == 'Total' || $Store == 'Current') :
+            $data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
 
-		elseif($Store == 'Category'):
-			$data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_product.ProductCategory_ID='$Category' AND  tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
+        elseif ($Store == 'Category') :
+            $data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_product.ProductCategory_ID='$Category' AND  tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
 
-		elseif($Store == 'Product'):
-			$data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_product.Product_SlNo='$Product' AND tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
+        elseif ($Store == 'Product') :
+            $data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_product.Product_SlNo='$Product' AND tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
 
-		elseif($Store == 'Supplier'):
-			$data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_purchasedetails.Supplier_IDNo = '$Supplier' AND tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
-		elseif($Store == 'Brand'):
-			$ddd = $data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_product.brand='$brand' AND  tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
-		endif; 
+        elseif ($Store == 'Supplier') :
+            $data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_purchasedetails.Supplier_IDNo = '$Supplier' AND tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
+        elseif ($Store == 'Brand') :
+            $ddd = $data['sql'] = $this->db->query("SELECT tbl_purchaseinventory.*,tbl_product.*,tbl_purchasedetails.* FROM tbl_purchaseinventory left join tbl_product on tbl_product.Product_SlNo = tbl_purchaseinventory.purchProduct_IDNo left join tbl_purchasedetails on tbl_purchasedetails.Product_IDNo = tbl_product.Product_SlNo left join sr_transferdetails on sr_transferdetails.Product_IDNo = tbl_product.Product_SlNo WHERE tbl_product.status='a' AND tbl_product.brand='$brand' AND  tbl_purchaseinventory.PurchaseInventory_brunchid = '$branchID' or sr_transferdetails.Brunch_to = '$branchID' group by tbl_purchasedetails.Product_IDNo")->result();
+        endif;
 
 
-		$this->session->set_userdata($data);
-		$this->load->view('Administrator/stock/search_stock', $data);
-	}
+        $this->session->set_userdata($data);
+        $this->load->view('Administrator/stock/search_stock', $data);
+    }
 
-	
-    public function fanceybox_warehouse(){
+
+    public function fanceybox_warehouse()
+    {
         $this->load->view('Administrator/products/fanceybox_warehouse');
     }
-    public function insert_fanceybox_Warehouse(){
+    public function insert_fanceybox_Warehouse()
+    {
         $mail = $this->input->post('add_Category');
         $query = $this->db->query("SELECT warehouse_name from tbl_warehouse where warehouse_name = '$mail'");
-        
-        if($query->num_rows() > 0){
+
+        if ($query->num_rows() > 0) {
             $data['exists'] = "This Name is Already Exists";
-            $this->load->view('Administrator/ajax/fanceybox_Warehouse',$data);
-        }
-        else{
+            $this->load->view('Administrator/ajax/fanceybox_Warehouse', $data);
+        } else {
             $data = array(
-                "warehouse_name"    =>$this->input->post('add_Category', TRUE)
-                
-                );
-            $this->mt->save_data('tbl_warehouse',$data);
+                "warehouse_name"    => $this->input->post('add_Category', TRUE)
+
+            );
+            $this->mt->save_data('tbl_warehouse', $data);
             $this->load->view('Administrator/ajax/fanceybox_Warehouse');
         }
     }
 
-   /*  public function selectProduct(){
+    /*  public function selectProduct(){
 		$data['title']  = 'Product';
         $pCategory = $this->input->post('pCategory');
         $brand = $this->input->post('brand');
@@ -842,162 +872,166 @@ class Products extends CI_Controller {
         $this->load->view('Administrator/index', $data);
     }
 	 */
-    public function selectProduct(){
-		$data['title']  = 'Product';
-		$brand = $this->input->post('brand');
+    public function selectProduct()
+    {
+        $data['title']  = 'Product';
+        $brand = $this->input->post('brand');
         $pCategory = $this->input->post('pCategory');
         $BRANCHid = $this->session->userdata("BRANCHid");
-		if($brand=='All' AND $pCategory!='All')
-		{
-			 $data['sproduct'] =  $this->Billing_model->select_Product_by_category($pCategory,$BRANCHid);
-		}else if($brand=='All' AND $pCategory=='All'){
-			 $data['allproduct'] =  $this->Billing_model->select_all_Product();
-		}else if($brand!='All' AND $pCategory=='no'){
-			 $data['sproduct'] = $this->Billing_model->select_Product_by_brand($brand,$BRANCHid);
-		}else{
-			 $data['sproduct'] = $this->Billing_model->selectProduct($pCategory,$brand,$BRANCHid);
-		} 
-       
-	    $data['content'] = $this->load->view('Administrator/products/add_product', $data, TRUE);
+        if ($brand == 'All' and $pCategory != 'All') {
+            $data['sproduct'] =  $this->Billing_model->select_Product_by_category($pCategory, $BRANCHid);
+        } else if ($brand == 'All' and $pCategory == 'All') {
+            $data['allproduct'] =  $this->Billing_model->select_all_Product();
+        } else if ($brand != 'All' and $pCategory == 'no') {
+            $data['sproduct'] = $this->Billing_model->select_Product_by_brand($brand, $BRANCHid);
+        } else {
+            $data['sproduct'] = $this->Billing_model->selectProduct($pCategory, $brand, $BRANCHid);
+        }
+
+        $data['content'] = $this->load->view('Administrator/products/add_product', $data, TRUE);
         $this->load->view('Administrator/index', $data);
     }
-	
-	public function productlist()
-	{  
+
+    public function productlist()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
-		$data['title']  = 'Product';
-		$data['allproduct'] =  $this->Billing_model->select_all_Product_list();
-      
-		$this->load->view('Administrator/products/productList', $data);
+        $data['title']  = 'Product';
+        $data['allproduct'] =  $this->Billing_model->select_all_Product_list();
+
+        $this->load->view('Administrator/products/productList', $data);
         //$this->load->view('Administrator/index', $data);
-	}
+    }
 
     public function product_name()
     {
-        $data['allproduct'] =$allproduct =  $this->Billing_model->get_product_name();
+        $data['allproduct'] = $allproduct =  $this->Billing_model->get_product_name();
         // print_r($allproduct); exit();
         $this->load->view('Administrator/products/product_name', $data);
     }
-	
-   public function barcodeGenerateFancybox($Product_SlNo){
-		$data['Product_SlNo'] = $Product_SlNo;
-	    $this->load->view('Administrator/products/barcode_fancybox', $data);
-   }
-   
-   public function barcodeGenerate($Product_SlNo){
-		$data['product'] = $this->Billing_model->select_Product_by_id($Product_SlNo);
-	    $this->load->view('Administrator/products/barcode/barcode', $data);
-   }
 
-   function barcode($kode){
-    
-		$this->load->library('zend');
+    public function barcodeGenerateFancybox($Product_SlNo)
+    {
+        $data['Product_SlNo'] = $Product_SlNo;
+        $this->load->view('Administrator/products/barcode_fancybox', $data);
+    }
+
+    public function barcodeGenerate($Product_SlNo)
+    {
+        $data['product'] = $this->Billing_model->select_Product_by_id($Product_SlNo);
+        $this->load->view('Administrator/products/barcode/barcode', $data);
+    }
+
+    function barcode($kode)
+    {
+
+        $this->load->library('zend');
         $this->zend->load('Zend/Barcode');
-        Zend_Barcode::render('code128','image', array('text'=>$kode), array());
-	}
-		
-	public function view_all_product()
-	{
-		$data['title']  = 'Product';
-		$data['allproduct'] =  $allproduct = $this->Billing_model->select_Product_without_limit();
-		
-		?>
-			<br/>
-        <div class="table-responsive">
-		<table id="dynamic-table" class="table table-striped table-bordered table-hover">
-			<thead>
-				<tr>
-					<th class="center">
-						<label class="pos-rel">
-							<input type="checkbox" class="ace" />
-							<span class="lbl"></span>
-						</label>
-					</th>
-					<th>Product ID</th>
-					<th>Categoty Name</th>
-					<th>Product Name</th>
-					<th class="hidden-480">Brand</th>
+        Zend_Barcode::render('code128', 'image', array('text' => $kode), array());
+    }
 
-					<th>Color</th>
-					<!--<th class="hidden-480">Purchase Rate</th>
+    public function view_all_product()
+    {
+        $data['title']  = 'Product';
+        $data['allproduct'] =  $allproduct = $this->Billing_model->select_Product_without_limit();
+
+?>
+        <br />
+        <div class="table-responsive">
+            <table id="dynamic-table" class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th class="center">
+                            <label class="pos-rel">
+                                <input type="checkbox" class="ace" />
+                                <span class="lbl"></span>
+                            </label>
+                        </th>
+                        <th>Product ID</th>
+                        <th>Categoty Name</th>
+                        <th>Product Name</th>
+                        <th class="hidden-480">Brand</th>
+
+                        <th>Color</th>
+                        <!--<th class="hidden-480">Purchase Rate</th>
 					<th class="hidden-480">Sell Rate</th>--->
 
-					<th>Action</th>
-				</tr>
-			</thead>
+                        <th>Action</th>
+                    </tr>
+                </thead>
 
-			<tbody>
-                <?php 
-				foreach($allproduct as $vallproduct)
-				{
-				?>
-                    <tr>
-								<td class="center">
-									<label class="pos-rel">
-										<input type="checkbox" class="ace" />
-										<span class="lbl"></span>
-									</label>
-								</td>
+                <tbody>
+                    <?php
+                    foreach ($allproduct as $vallproduct) {
+                    ?>
+                        <tr>
+                            <td class="center">
+                                <label class="pos-rel">
+                                    <input type="checkbox" class="ace" />
+                                    <span class="lbl"></span>
+                                </label>
+                            </td>
 
-								<td>
-									<a href="#"><?php echo $vallproduct->Product_Code; ?></a>
-								</td>
-								<td><?php echo $vallproduct->ProductCategory_Name; ?></td>
-								<td class="hidden-480"><?php echo $vallproduct->Product_Name; ?></td>
-								<td><?php echo $vallproduct->brand_name; ?></td>
+                            <td>
+                                <a href="#"><?php echo $vallproduct->Product_Code; ?></a>
+                            </td>
+                            <td><?php echo $vallproduct->ProductCategory_Name; ?></td>
+                            <td class="hidden-480"><?php echo $vallproduct->Product_Name; ?></td>
+                            <td><?php echo $vallproduct->brand_name; ?></td>
 
-								<td class="hidden-480">
-									<span class="label label-sm label-info arrowed arrowed-righ">
-									<?php echo $vallproduct->color_name; ?>
-									</span>
-								</td>
-								<!--<td class="hidden-480"><?php echo $vallproduct->Product_Purchase_Rate; ?></td>
+                            <td class="hidden-480">
+                                <span class="label label-sm label-info arrowed arrowed-righ">
+                                    <?php echo $vallproduct->color_name; ?>
+                                </span>
+                            </td>
+                            <!--<td class="hidden-480"><?php echo $vallproduct->Product_Purchase_Rate; ?></td>
 								<td class="hidden-480"><?php echo $vallproduct->Product_SellingPrice; ?></td>-->
 
-								<td>
-									<div class="hidden-sm hidden-xs action-buttons">
-										<span class="blue" onclick="Edit_product(<?php echo $vallproduct->Product_SlNo; ?>)" style="cursor:pointer;">
-											<i class="ace-icon fa fa-pencil bigger-130"></i>
-										</span>
+                            <td>
+                                <div class="hidden-sm hidden-xs action-buttons">
+                                    <span class="blue" onclick="Edit_product(<?php echo $vallproduct->Product_SlNo; ?>)" style="cursor:pointer;">
+                                        <i class="ace-icon fa fa-pencil bigger-130"></i>
+                                    </span>
 
-										<a class="green" href="" onclick="deleted(<?php echo $vallproduct->Product_SlNo; ?>)">
-											<i class="ace-icon fa fa-trash bigger-130 text-danger"></i>
-										</a>
+                                    <a class="green" href="" onclick="deleted(<?php echo $vallproduct->Product_SlNo; ?>)">
+                                        <i class="ace-icon fa fa-trash bigger-130 text-danger"></i>
+                                    </a>
 
-										<a class="black" href="<?php echo base_url(); ?>Administrator/Products/barcodeGenerate/<?php echo $vallproduct->Product_SlNo; ?>" target="_blank">
-											<i class="ace-icon fa fa-barcode bigger-130"></i>
-										</a>
-									</div>
-								</td>
-							</tr>
-                <?php } ?> 
-                </tbody>    
-            </table> 
-			</div>
-		<?php
-		//echo "<pre>";print_r($data['allproduct']);exit;
-		//$this->load->view('Administrator/products/all_product', $data, TRUE);
+                                    <a class="black" href="<?php echo base_url(); ?>Administrator/Products/barcodeGenerate/<?php echo $vallproduct->Product_SlNo; ?>" target="_blank">
+                                        <i class="ace-icon fa fa-barcode bigger-130"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+<?php
+        //echo "<pre>";print_r($data['allproduct']);exit;
+        //$this->load->view('Administrator/products/all_product', $data, TRUE);
         //$this->load->view('Administrator/index', $data);
     }
 
-    public function productLedger(){
+    public function productLedger()
+    {
         $access = $this->mt->userAccess();
-        if(!$access){
+        if (!$access) {
             redirect(base_url());
         }
-		$data['title']  = 'Product Ledger';
-      
-		$data['content'] = $this->load->view('Administrator/products/product_ledger', $data, true);
+        $data['title']  = 'Product Ledger';
+
+        $data['content'] = $this->load->view('Administrator/products/product_ledger', $data, true);
         $this->load->view('Administrator/index', $data);
     }
-    
-    public function getProductLedger(){
+
+    public function getProductLedger()
+    {
         $date = date('Y-m-d');
         $data = json_decode($this->input->raw_input_stream);
-    
+
         $result = $this->db->query("
             select
                 'a' as sequence,
@@ -1115,22 +1149,21 @@ class Products extends CI_Controller {
             order by date, sequence, id
         ")->result();
 
-        $ledger = array_map(function($key, $row) use ($result){
+        $ledger = array_map(function ($key, $row) use ($result) {
             $row->stock = $key == 0 ? $row->in_quantity - $row->out_quantity : ($result[$key - 1]->stock + ($row->in_quantity - $row->out_quantity));
             return $row;
         }, array_keys($result), $result);
 
-        $previousRows = array_filter($ledger, function($row) use ($data){
+        $previousRows = array_filter($ledger, function ($row) use ($data) {
             return $row->date < $data->dateFrom;
         });
 
         $previousStock = empty($previousRows) ? 0 : end($previousRows)->stock;
 
-        $ledger = array_filter($ledger, function($row) use ($data){
+        $ledger = array_filter($ledger, function ($row) use ($data) {
             return $row->date >= $data->dateFrom && $row->date <= $data->dateTo;
         });
 
         echo json_encode(['ledger' => $ledger, 'previousStock' => $previousStock]);
-
     }
 }
