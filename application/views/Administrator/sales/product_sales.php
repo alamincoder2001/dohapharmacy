@@ -500,6 +500,7 @@
 				selectedProduct: {
 					Product_SlNo: '',
 					display_text: 'Select Product',
+					Product_Code: '',
 					Product_Name: '',
 					Unit_Name: '',
 					quantity: 0,
@@ -507,9 +508,6 @@
 					Product_SellingPrice: 0.00,
 					vat: 0.00,
 					total: 0.00,
-					unitQty: 0,
-					qty: 0,
-					shelf: '',
 					ProductCategory_Name: ''
 				},
 				productPurchaseRate: '',
@@ -547,9 +545,24 @@
 			}
 		},
 		methods: {
-			productSearch(val) {
+			// ProductSearchs(options, search){
+			// 	return options.filter(product => product.Product_Name.toLowerCase().startsWith(search))
+			// },
+			async productSearch(val, loading) {
+				loading(true)
+				console.log(val);
+				this.products = [];
 				if (val) {
-					this.products = this.products2.filter(product => product.Product_Name.toLowerCase().startsWith(val))
+					await new Promise((resolve, reject) => {
+							if (val) {
+								resolve(this.products2.filter(product => product.Product_Name.toLowerCase().startsWith(val)))
+							} else {
+								reject();
+							}
+						}).then((result) => {
+							this.products = result;
+							loading(false)
+						})
 				}
 			},
 			async getAccounts() {
@@ -621,9 +634,6 @@
 				if (this.selectedCustomer.Customer_SlNo == '') {
 					return;
 				}
-				// if (event.type == 'readystatechange') {
-				// 	return;
-				// }
 
 				if (this.sales.salesId != 0 && this.oldCustomerId != parseInt(this.selectedCustomer.Customer_SlNo)) {
 					let changeConfirm = confirm('Changing customer will set previous due to current due amount. Do you really want to change customer?');
@@ -651,6 +661,9 @@
 				})
 			},
 			async productOnChange() {
+				if (this.selectedProduct == null) {
+					return
+				}
 				if (this.selectedProduct.Product_SlNo == '') {
 					document.querySelector("#productCode").focus();
 					return;
@@ -666,9 +679,6 @@
 						Product_SellingPrice: 0.00,
 						vat: 0.00,
 						total: 0.00,
-						unitQty: 0,
-						qty: 0,
-						shelf: '',
 						ProductCategory_Name: ''
 					}
 					return
@@ -783,23 +793,23 @@
 				this.statusSl = true;
 				this.cartSl = sl + 1;
 			},
-			async changeCartQtyAmount(event, id, quantity){
+			async changeCartQtyAmount(event, id, quantity) {
 				let sl = this.cart.findIndex(pro => pro.productId == id);
 				let cartQty = this.cart[sl].quantity;
 				if (parseFloat(cartQty) == 0) {
 					this.cart[sl].quantity = 1;
 				}
 				let stock = await axios.post('/get_product_stock', {
-						productId: id
-					}).then(res => {
-						return res.data[0].current_quantity;
-					})
+					productId: id
+				}).then(res => {
+					return res.data[0].current_quantity;
+				})
 				if (parseFloat(stock) < parseFloat(quantity)) {
 					alert("Stock unavailable");
 					this.cart[sl].quantity = parseFloat(stock)
 				}
 				this.cart = this.cart.map(item => {
-					item.total = (parseFloat(item.salesRate)*item.quantity).toFixed(2)
+					item.total = (parseFloat(item.salesRate) * item.quantity).toFixed(2)
 					return item;
 				})
 				this.calculateTotal();
